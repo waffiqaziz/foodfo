@@ -64,7 +64,6 @@ class HomeScreen extends StatelessWidget {
                               context.read<HomeProvider>().openGallery(),
                         ),
                       ),
-                      const SizedBox(width: 12),
                       Expanded(
                         child: _ImageSourceButton(
                           icon: Icons.camera_alt_outlined,
@@ -73,7 +72,6 @@ class HomeScreen extends StatelessWidget {
                               context.read<HomeProvider>().openCamera(),
                         ),
                       ),
-                      const SizedBox(width: 12),
                       Expanded(
                         child: _ImageSourceButton(
                           icon: Icons.lens_blur_outlined,
@@ -81,6 +79,15 @@ class HomeScreen extends StatelessWidget {
                           onPressed: () => context
                               .read<HomeProvider>()
                               .openCustomCamera(context),
+                        ),
+                      ),
+                      Expanded(
+                        child: _ImageSourceButton(
+                          icon: Icons.video_camera_back_outlined,
+                          label: 'Real-time',
+                          onPressed: () => context
+                              .read<HomeProvider>()
+                               .openRealtimeCamera(context),
                         ),
                       ),
                     ],
@@ -114,8 +121,9 @@ class HomeScreen extends StatelessWidget {
                                 label: 'Dismiss',
                                 textColor: Colors.white,
                                 onPressed: () {
-                                  ScaffoldMessenger.of(context)
-                                      .hideCurrentSnackBar();
+                                  ScaffoldMessenger.of(
+                                    context,
+                                  ).hideCurrentSnackBar();
                                 },
                               ),
                             ),
@@ -247,7 +255,7 @@ class _FoodResultsCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 20),
-            
+
             // Top prediction
             if (entries.isNotEmpty) ...[
               Text(
@@ -266,7 +274,7 @@ class _FoodResultsCard extends StatelessWidget {
                 ),
               ),
             ],
-            
+
             // Other predictions
             if (entries.length > 1) ...[
               const SizedBox(height: 20),
@@ -280,29 +288,35 @@ class _FoodResultsCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              ...entries.skip(1).map((entry) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        _formatFoodName(entry.key),
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: colorScheme.onPrimaryContainer,
-                        ),
+              ...entries
+                  .skip(1)
+                  .map(
+                    (entry) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              _formatFoodName(entry.key),
+                              style: Theme.of(context).textTheme.bodyLarge
+                                  ?.copyWith(
+                                    color: colorScheme.onPrimaryContainer,
+                                  ),
+                            ),
+                          ),
+                          Text(
+                            '${(entry.value * 100).toStringAsFixed(1)}%',
+                            style: Theme.of(context).textTheme.bodyLarge
+                                ?.copyWith(
+                                  color: colorScheme.onPrimaryContainer,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                          ),
+                        ],
                       ),
                     ),
-                    Text(
-                      '${(entry.value * 100).toStringAsFixed(1)}%',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              )),
+                  ),
             ],
           ],
         ),
@@ -312,9 +326,14 @@ class _FoodResultsCard extends StatelessWidget {
 
   String _formatFoodName(String name) {
     // Capitalize first letter of each word
-    return name.split(' ').map((word) => 
-      word.isEmpty ? word : word[0].toUpperCase() + word.substring(1).toLowerCase()
-    ).join(' ');
+    return name
+        .split(' ')
+        .map(
+          (word) => word.isEmpty
+              ? word
+              : word[0].toUpperCase() + word.substring(1).toLowerCase(),
+        )
+        .join(' ');
   }
 }
 
@@ -331,9 +350,9 @@ class _ImageSourceButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return OutlinedButton(
+    return TextButton(
       onPressed: onPressed,
-      style: OutlinedButton.styleFrom(
+      style: TextButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
@@ -372,7 +391,7 @@ class _InfoCard extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Take or select a photo of food to identify it using AI',
+                'Take or select a photo of food to identify it using Machine Learning',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: colorScheme.onSecondaryContainer,
                 ),

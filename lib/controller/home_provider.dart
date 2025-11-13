@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:food_fo/service/image_classification_service.dart';
 import 'package:food_fo/ui/camera/camera_page.dart';
+import 'package:food_fo/ui/camera/real_time_camera_page.dart';
 import 'package:food_fo/utils/helper.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
 class HomeProvider extends ChangeNotifier {
   final ImageClassificationService _classificationService;
-  
+
   HomeProvider(this._classificationService) {
     _initializeService();
   }
@@ -106,6 +107,13 @@ class HomeProvider extends ChangeNotifier {
     }
   }
 
+  void openRealtimeCamera(BuildContext context) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const RealtimeCameraPage()),
+    );
+  }
+
   Future<void> analyzeImage() async {
     if (imagePath == null || imageFile == null) return;
 
@@ -118,8 +126,10 @@ class HomeProvider extends ChangeNotifier {
       final bytes = await imageFile!.readAsBytes();
 
       // Run classification using isolate (prevent freeze UI)
-      classifications = await _classificationService.inferenceStaticImage(bytes);
-      
+      classifications = await _classificationService.inferenceStaticImage(
+        bytes,
+      );
+
       hasError = false;
       logger.d("Classification successful: $classifications");
     } catch (e) {

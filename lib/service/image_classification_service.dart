@@ -16,22 +16,32 @@ class ImageClassificationService {
   late Tensor inputTensor;
   late Tensor outputTensor;
 
+   bool _isInitialized = false;
+
   Future<void> initHelper() async {
+    if (_isInitialized) {
+      logger.d('Service already initialized, skipping...');
+      return;
+    }
+    
     await _loadLabels();
     await _loadModel();
     isolateInference = IsolateInference();
     await isolateInference.start();
+    
+    _isInitialized = true;
+    logger.d('Service initialized successfully');
   }
 
   Future<void> _loadModel() async {
     final options = InterpreterOptions()
       ..useNnApiForAndroid = true
       ..useMetalDelegateForIOS = true;
-    
+
     interpreter = await Interpreter.fromAsset(modelPath, options: options);
     inputTensor = interpreter.getInputTensors().first;
     outputTensor = interpreter.getOutputTensors().first;
-    
+
     logger.d('Interpreter loaded successfully');
     logger.d('Input shape: ${inputTensor.shape}');
     logger.d('Output shape: ${outputTensor.shape}');
@@ -39,7 +49,10 @@ class ImageClassificationService {
 
   Future<void> _loadLabels() async {
     final labelTxt = await rootBundle.loadString(labelsPath);
-    labels = labelTxt.split('\n').where((label) => label.trim().isNotEmpty).toList();
+    labels = labelTxt
+        .split('\n')
+        .where((label) => label.trim().isNotEmpty)
+        .toList();
     logger.d('Loaded ${labels.length} labels');
   }
 
@@ -58,7 +71,7 @@ class ImageClassificationService {
     isolateInference.sendPort.send(
       isolateModel..responsePort = responsePort.sendPort,
     );
-    
+
     var results = await responsePort.first;
     return results;
   }
@@ -72,12 +85,12 @@ class ImageClassificationService {
       inputTensor.shape,
       outputTensor.shape,
     );
-    
+
     ReceivePort responsePort = ReceivePort();
     isolateInference.sendPort.send(
       isolateModel..responsePort = responsePort.sendPort,
     );
-    
+
     var results = await responsePort.first;
     return results;
   }

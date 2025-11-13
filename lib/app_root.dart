@@ -12,7 +12,11 @@ class AppRoot extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => HomeProvider(ImageClassificationService())),
+        Provider(create: (_) => ImageClassificationService()),
+        ChangeNotifierProvider(
+          create: (context) =>
+              HomeProvider(context.read<ImageClassificationService>()),
+        ),
       ],
       child: MaterialApp(
         title: 'FoodFo',
