@@ -13,7 +13,7 @@ class HomeScreen extends StatelessWidget {
       body: CustomScrollView(
         slivers: [
           SliverAppBar.medium(
-            title: const Text('Cancer Detection'),
+            title: const Text('Food Classification'),
             floating: false,
             pinned: true,
           ),
@@ -31,16 +31,14 @@ class HomeScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
 
-                  // Result Card
+                  // Results Card
                   Consumer<HomeProvider>(
                     builder: (context, provider, child) {
-                      final response = provider.uploadResponse;
-                      if (response?.data == null) {
+                      if (provider.classifications.isEmpty) {
                         return const SizedBox.shrink();
                       }
-                      return _ResultCard(
-                        result: response!.data!.result,
-                        confidence: response.data!.confidenceScore,
+                      return _FoodResultsCard(
+                        classifications: provider.classifications,
                       );
                     },
                   ),
@@ -116,23 +114,21 @@ class HomeScreen extends StatelessWidget {
                                 label: 'Dismiss',
                                 textColor: Colors.white,
                                 onPressed: () {
-                                  ScaffoldMessenger.of(
-                                    context,
-                                  ).hideCurrentSnackBar();
+                                  ScaffoldMessenger.of(context)
+                                      .hideCurrentSnackBar();
                                 },
                               ),
                             ),
                           );
-                          // Clear error after showing snackbar
                           provider.clearError();
                         });
                       }
 
                       return FilledButton.icon(
-                        onPressed: hasImage && !provider.isUploading
-                            ? () => provider.upload()
+                        onPressed: hasImage && !provider.isAnalyzing
+                            ? () => provider.analyzeImage()
                             : null,
-                        icon: provider.isUploading
+                        icon: provider.isAnalyzing
                             ? const SizedBox(
                                 width: 20,
                                 height: 20,
@@ -141,11 +137,11 @@ class HomeScreen extends StatelessWidget {
                                   color: Colors.white,
                                 ),
                               )
-                            : const Icon(Icons.analytics_outlined),
+                            : const Icon(Icons.restaurant_menu),
                         label: Text(
-                          provider.isUploading
+                          provider.isAnalyzing
                               ? 'Analyzing...'
-                              : 'Analyze Image',
+                              : 'Identify Food',
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -190,7 +186,7 @@ class _ImagePreviewCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    Icons.add_photo_alternate_outlined,
+                    Icons.restaurant,
                     size: 80,
                     color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                   ),
@@ -203,7 +199,7 @@ class _ImagePreviewCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Choose an image source below',
+                    'Choose an image to identify food',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: colorScheme.onSurfaceVariant.withValues(
                         alpha: 0.7,
@@ -218,21 +214,18 @@ class _ImagePreviewCard extends StatelessWidget {
   }
 }
 
-class _ResultCard extends StatelessWidget {
-  final String result;
-  final double confidence;
+class _FoodResultsCard extends StatelessWidget {
+  final Map<String, num> classifications;
 
-  const _ResultCard({required this.result, required this.confidence});
+  const _FoodResultsCard({required this.classifications});
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final isHighConfidence = confidence >= 70;
+    final entries = classifications.entries.toList();
 
     return Card(
-      color: isHighConfidence
-          ? colorScheme.primaryContainer
-          : colorScheme.tertiaryContainer,
+      color: colorScheme.primaryContainer,
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -240,63 +233,88 @@ class _ResultCard extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  Icons.analytics,
-                  color: isHighConfidence
-                      ? colorScheme.onPrimaryContainer
-                      : colorScheme.onTertiaryContainer,
+                  Icons.restaurant_menu,
+                  color: colorScheme.onPrimaryContainer,
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  'Analysis Result',
+                  'Food Recognition Results',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: isHighConfidence
-                        ? colorScheme.onPrimaryContainer
-                        : colorScheme.onTertiaryContainer,
+                    color: colorScheme.onPrimaryContainer,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            Text(
-              result,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: isHighConfidence
-                    ? colorScheme.onPrimaryContainer
-                    : colorScheme.onTertiaryContainer,
+            const SizedBox(height: 20),
+            
+            // Top prediction
+            if (entries.isNotEmpty) ...[
+              Text(
+                _formatFoodName(entries[0].key),
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onPrimaryContainer,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Confidence: ',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: isHighConfidence
-                        ? colorScheme.onPrimaryContainer.withValues(alpha: 0.8)
-                        : colorScheme.onTertiaryContainer.withValues(
-                            alpha: 0.8,
-                          ),
-                  ),
+              const SizedBox(height: 8),
+              Text(
+                '${(entries[0].value * 100).toStringAsFixed(1)}% confidence',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
                 ),
-                Text(
-                  '${confidence.round()}%',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: isHighConfidence
-                        ? colorScheme.onPrimaryContainer
-                        : colorScheme.onTertiaryContainer,
-                  ),
+              ),
+            ],
+            
+            // Other predictions
+            if (entries.length > 1) ...[
+              const SizedBox(height: 20),
+              const Divider(),
+              const SizedBox(height: 12),
+              Text(
+                'Other possibilities:',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
+                  fontWeight: FontWeight.w500,
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 12),
+              ...entries.skip(1).map((entry) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _formatFoodName(entry.key),
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: colorScheme.onPrimaryContainer,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      '${(entry.value * 100).toStringAsFixed(1)}%',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: colorScheme.onPrimaryContainer,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+            ],
           ],
         ),
       ),
     );
+  }
+
+  String _formatFoodName(String name) {
+    // Capitalize first letter of each word
+    return name.split(' ').map((word) => 
+      word.isEmpty ? word : word[0].toUpperCase() + word.substring(1).toLowerCase()
+    ).join(' ');
   }
 }
 
@@ -354,7 +372,7 @@ class _InfoCard extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Select an image and tap "Analyze" to detect cancer cells using AI',
+                'Take or select a photo of food to identify it using AI',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: colorScheme.onSecondaryContainer,
                 ),

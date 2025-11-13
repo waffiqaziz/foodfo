@@ -17,8 +17,8 @@ class ImageClassificationService {
   late Tensor outputTensor;
 
   Future<void> initHelper() async {
-    _loadLabels();
-    _loadModel();
+    await _loadLabels();
+    await _loadModel();
     isolateInference = IsolateInference();
     await isolateInference.start();
   }
@@ -27,20 +27,23 @@ class ImageClassificationService {
     final options = InterpreterOptions()
       ..useNnApiForAndroid = true
       ..useMetalDelegateForIOS = true;
-    // Load model from assets
+    
     interpreter = await Interpreter.fromAsset(modelPath, options: options);
-    // Get tensor input shape [1, 224, 224, 3]
     inputTensor = interpreter.getInputTensors().first;
-    // Get tensor output shape [1, 1001]
     outputTensor = interpreter.getOutputTensors().first;
+    
     logger.d('Interpreter loaded successfully');
+    logger.d('Input shape: ${inputTensor.shape}');
+    logger.d('Output shape: ${outputTensor.shape}');
   }
 
   Future<void> _loadLabels() async {
     final labelTxt = await rootBundle.loadString(labelsPath);
-    labels = labelTxt.split('\n');
+    labels = labelTxt.split('\n').where((label) => label.trim().isNotEmpty).toList();
+    logger.d('Loaded ${labels.length} labels');
   }
 
+  // For camera stream (real-time classification)
   Future<Map<String, double>> inferenceCameraFrame(
     CameraImage cameraImage,
   ) async {
@@ -55,12 +58,51 @@ class ImageClassificationService {
     isolateInference.sendPort.send(
       isolateModel..responsePort = responsePort.sendPort,
     );
-    // get inference result.
+    
     var results = await responsePort.first;
     return results;
   }
 
+  // For static images (gallery/camera capture)
+  Future<Map<String, double>> inferenceImage(
+    List<List<List<num>>> imageMatrix,
+  ) async {
+    try {
+      // Prepare input
+      final input = [imageMatrix];
+      final output = [List<int>.filled(outputTensor.shape[1], 0)];
+
+      // Run inference
+      interpreter.run(input, output);
+
+      // Process results
+      final result = output.first;
+      int maxScore = result.reduce((a, b) => a + b);
+      
+      final values = result
+          .map((e) => e.toDouble() / maxScore.toDouble())
+          .toList();
+      
+      var classification = Map.fromIterables(labels, values);
+      
+      // Filter out zero values and background
+      classification.removeWhere((key, value) => 
+        value == 0 || key.toLowerCase() == '__background__'
+      );
+
+      // Sort by confidence and return top 3
+      final sortedEntries = classification.entries.toList()
+        ..sort((a, b) => b.value.compareTo(a.value));
+      
+      return Map.fromEntries(sortedEntries.take(3));
+    } catch (e) {
+      logger.e('Inference error: $e');
+      rethrow;
+    }
+  }
+
   Future<void> close() async {
     await isolateInference.close();
+    interpreter.close();
   }
 }
