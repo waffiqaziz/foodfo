@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:food_fo/service/image_classification_service.dart';
 import 'package:food_fo/ui/camera/camera_page.dart';
 import 'package:food_fo/utils/helper.dart';
-import 'package:image/image.dart' as img;
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -32,7 +31,6 @@ class HomeProvider extends ChangeNotifier {
   void _setImage(XFile? value) {
     imageFile = value;
     imagePath = value?.path;
-
     // Clear previous results when new image is selected
     classifications = {};
     notifyListeners();
@@ -116,28 +114,11 @@ class HomeProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Load and decode the image
+      // Read image bytes
       final bytes = await imageFile!.readAsBytes();
-      final image = img.decodeImage(bytes);
-      
-      if (image == null) {
-        throw Exception('Failed to decode image');
-      }
 
-      // Resize to model input size (into 224x224)
-      final resizedImage = img.copyResize(image, width: 224, height: 224);
-
-      // Convert to the format expected by your model
-      final imageMatrix = List.generate(
-        resizedImage.height,
-        (y) => List.generate(resizedImage.width, (x) {
-          final pixel = resizedImage.getPixel(x, y);
-          return [pixel.r, pixel.g, pixel.b];
-        }),
-      );
-
-      // Run inference
-      classifications = await _classificationService.inferenceImage(imageMatrix);
+      // Run classification using isolate (prevent freeze UI)
+      classifications = await _classificationService.inferenceStaticImage(bytes);
       
       hasError = false;
       logger.d("Classification successful: $classifications");
