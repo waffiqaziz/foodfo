@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:food_fo/controller/food_detail_provider.dart';
 import 'package:food_fo/controller/home_provider.dart';
 import 'package:food_fo/controller/image_classification_provider.dart';
 import 'package:food_fo/service/image_classification_service.dart';
@@ -23,6 +24,7 @@ class AppRoot extends StatelessWidget {
             context.read<ImageClassificationService>(),
           ),
         ),
+        ChangeNotifierProvider(create: (_) => FoodDetailProvider()),
       ],
       child: MaterialApp(
         title: 'FoodFo',
