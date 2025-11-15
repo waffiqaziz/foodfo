@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:food_fo/controller/image_classification_provider.dart';
 import 'package:food_fo/service/image_classification_service.dart';
@@ -32,11 +33,24 @@ class _RealtimeCameraBody extends StatefulWidget {
 class _RealtimeCameraBodyState extends State<_RealtimeCameraBody> {
   bool _isStreamingEnabled = true;
   late ImageClassificationViewmodel _viewModel;
+  bool _isDisposed = false;
 
   @override
   void initState() {
     super.initState();
     _viewModel = context.read<ImageClassificationViewmodel>();
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    super.dispose();
+  }
+
+  Future<void> _handleClassification(CameraImage cameraImage) async {
+    if (!_isDisposed && mounted) {
+      await _viewModel.runClassification(cameraImage);
+    }
   }
 
   @override
@@ -50,7 +64,7 @@ class _RealtimeCameraBodyState extends State<_RealtimeCameraBody> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            // The CameraView widget will handle its own disposal
+            _isStreamingEnabled = false;
             Navigator.of(context).pop();
           },
           style: IconButton.styleFrom(
@@ -76,24 +90,8 @@ class _RealtimeCameraBodyState extends State<_RealtimeCameraBody> {
         fit: StackFit.expand,
         children: [
           // Camera Preview - CameraView handles all camera logic
-          ClipRect(
-            child: OverflowBox(
-              alignment: Alignment.center,
-              child: FittedBox(
-                fit: BoxFit.cover,
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  child: CameraView(
-                    onImage: _isStreamingEnabled
-                        ? (cameraImage) async {
-                            await _viewModel.runClassification(cameraImage);
-                          }
-                        : null,
-                  ),
-                ),
-              ),
-            ),
+          CameraView(
+            onImage: _isStreamingEnabled ? _handleClassification : null,
           ),
 
           // Frame overlay
