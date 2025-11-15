@@ -16,19 +16,19 @@ class ImageClassificationService {
   late Tensor inputTensor;
   late Tensor outputTensor;
 
-   bool _isInitialized = false;
+  bool _isInitialized = false;
 
   Future<void> initHelper() async {
     if (_isInitialized) {
       logger.d('Service already initialized, skipping...');
       return;
     }
-    
+
     await _loadLabels();
     await _loadModel();
     isolateInference = IsolateInference();
     await isolateInference.start();
-    
+
     _isInitialized = true;
     logger.d('Service initialized successfully');
   }

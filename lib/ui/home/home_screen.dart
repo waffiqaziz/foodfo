@@ -87,7 +87,7 @@ class HomeScreen extends StatelessWidget {
                           label: 'Real-time',
                           onPressed: () => context
                               .read<HomeProvider>()
-                               .openRealtimeCamera(context),
+                              .openRealtimeCamera(context),
                         ),
                       ),
                     ],

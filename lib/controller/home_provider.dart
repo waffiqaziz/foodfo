@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:food_fo/service/image_classification_service.dart';
-import 'package:food_fo/ui/camera/camera_page.dart';
+import 'package:food_fo/ui/camera/custom_camera_page.dart';
 import 'package:food_fo/ui/camera/real_time_camera_page.dart';
 import 'package:food_fo/utils/helper.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -99,7 +99,7 @@ class HomeProvider extends ChangeNotifier {
   void openCustomCamera(BuildContext context) async {
     final XFile? resultImageFile = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => CameraPage()),
+      MaterialPageRoute(builder: (context) => CustomCameraPage()),
     );
 
     if (resultImageFile != null) {
@@ -110,7 +110,7 @@ class HomeProvider extends ChangeNotifier {
   void openRealtimeCamera(BuildContext context) async {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const RealtimeCameraPage()),
+      MaterialPageRoute(builder: (_) => const RealtimeCameraPage()),
     );
   }
 

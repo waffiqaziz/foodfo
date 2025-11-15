@@ -21,8 +21,4 @@ class ImageClassificationViewmodel extends ChangeNotifier {
     _classifications = await _service.inferenceCameraFrame(camera);
     notifyListeners();
   }
-
-  Future<void> close() async {
-    await _service.close();
-  }
 }

@@ -4,8 +4,8 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:food_fo/utils/helper.dart';
 
-class CameraPage extends StatelessWidget {
-  const CameraPage({super.key});
+class CustomCameraPage extends StatelessWidget {
+  const CustomCameraPage({super.key});
 
   @override
   Widget build(BuildContext context) {

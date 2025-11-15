@@ -1,10 +1,8 @@
-import 'dart:io';
-
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:food_fo/controller/image_classification_provider.dart';
 import 'package:food_fo/service/image_classification_service.dart';
-import 'package:food_fo/utils/helper.dart';
+import 'package:food_fo/ui/camera/camera_view.dart';
+import 'package:food_fo/ui/camera/rounded_corner_border.dart';
 import 'package:provider/provider.dart';
 
 class RealtimeCameraPage extends StatelessWidget {
@@ -31,105 +29,14 @@ class _RealtimeCameraBody extends StatefulWidget {
   State<_RealtimeCameraBody> createState() => _RealtimeCameraBodyState();
 }
 
-class _RealtimeCameraBodyState extends State<_RealtimeCameraBody>
-    with WidgetsBindingObserver {
-  bool _isCameraInitialized = false;
-  List<CameraDescription> _cameras = [];
-  CameraController? controller;
-  bool _isBackCameraSelected = true;
-  bool _isClassifying = false;
+class _RealtimeCameraBodyState extends State<_RealtimeCameraBody> {
   bool _isStreamingEnabled = true;
-
-  Future<void> onNewCameraSelected(CameraDescription cameraDescription) async {
-    final previousCameraController = controller;
-    final cameraController = CameraController(
-      cameraDescription,
-      ResolutionPreset.medium, // Medium for better performance
-      enableAudio: false,
-      imageFormatGroup: Platform.isAndroid
-          ? ImageFormatGroup.nv21
-          : ImageFormatGroup.bgra8888,
-    );
-
-    await previousCameraController?.dispose();
-
-    try {
-      await cameraController.initialize();
-
-      // Start image stream for real-time classification
-      if (_isStreamingEnabled) {
-        cameraController.startImageStream(_processCameraImage);
-      }
-
-      if (mounted) {
-        setState(() {
-          controller = cameraController;
-          _isCameraInitialized = controller!.value.isInitialized;
-        });
-      }
-    } catch (e) {
-      logger.e('Error initializing camera: $e');
-    }
-  }
-
-  void _processCameraImage(CameraImage cameraImage) async {
-    if (_isClassifying || !_isStreamingEnabled) return;
-
-    _isClassifying = true;
-
-    try {
-      await context.read<ImageClassificationViewmodel>().runClassification(
-        cameraImage,
-      );
-    } catch (e) {
-      logger.e('Classification error: $e');
-    } finally {
-      _isClassifying = false;
-    }
-  }
-
-  void initCamera() async {
-    if (_cameras.isEmpty) {
-      _cameras = await availableCameras();
-    }
-    if (_cameras.isNotEmpty) {
-      await onNewCameraSelected(_cameras.first);
-    }
-  }
+  late ImageClassificationViewmodel _viewModel;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    initCamera();
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    if (controller?.value.isStreamingImages == true) {
-      controller?.stopImageStream();
-    }
-    controller?.dispose();
-    context.read<ImageClassificationViewmodel>().close();
-
-    super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    final CameraController? cameraController = controller;
-
-    if (cameraController == null || !cameraController.value.isInitialized) {
-      return;
-    }
-
-    if (state == AppLifecycleState.inactive) {
-      cameraController.stopImageStream();
-      cameraController.dispose();
-    } else if (state == AppLifecycleState.resumed) {
-      onNewCameraSelected(cameraController.description);
-    }
+    _viewModel = context.read<ImageClassificationViewmodel>();
   }
 
   @override
@@ -142,7 +49,10 @@ class _RealtimeCameraBodyState extends State<_RealtimeCameraBody>
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {
+            // The CameraView widget will handle its own disposal
+            Navigator.of(context).pop();
+          },
           style: IconButton.styleFrom(
             backgroundColor: Colors.black.withValues(alpha: 0.5),
           ),
@@ -154,11 +64,6 @@ class _RealtimeCameraBodyState extends State<_RealtimeCameraBody>
             onPressed: () {
               setState(() {
                 _isStreamingEnabled = !_isStreamingEnabled;
-                if (_isStreamingEnabled) {
-                  controller?.startImageStream(_processCameraImage);
-                } else {
-                  controller?.stopImageStream();
-                }
               });
             },
             style: IconButton.styleFrom(
@@ -170,45 +75,52 @@ class _RealtimeCameraBodyState extends State<_RealtimeCameraBody>
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Camera Preview
-          if (_isCameraInitialized)
-            ClipRect(
-              child: OverflowBox(
-                alignment: Alignment.center,
-                child: FittedBox(
-                  fit: BoxFit.cover,
-                  child: SizedBox(
-                    width: controller!.value.previewSize!.height,
-                    height: controller!.value.previewSize!.width,
-                    child: CameraPreview(controller!),
+          // Camera Preview - CameraView handles all camera logic
+          ClipRect(
+            child: OverflowBox(
+              alignment: Alignment.center,
+              child: FittedBox(
+                fit: BoxFit.cover,
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: CameraView(
+                    onImage: _isStreamingEnabled
+                        ? (cameraImage) async {
+                            await _viewModel.runClassification(cameraImage);
+                          }
+                        : null,
                   ),
-                ),
-              ),
-            )
-          else
-            const Center(child: CircularProgressIndicator(color: Colors.white)),
-
-          // Center focus frame
-          if (_isCameraInitialized)
-            Center(
-              child: Container(
-                width: 280,
-                height: 280,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.5),
-                    width: 3,
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(17),
-                  child: CustomPaint(painter: _CornerBracketsPainter()),
                 ),
               ),
             ),
+          ),
 
-          // Real-time Results Bottom Sheet
+          // Frame overlay
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top: 150,
+                bottom: 260.0,
+              ),
+              child: SizedBox(
+                width: double.infinity,
+                height: 350,
+                child: CustomPaint(
+                  painter: RoundedCornerBorderPainter(
+                    color: Colors.white.withValues(alpha: 0.5),
+                    strokeWidth: 2,
+                    cornerSize: 40,
+                    cornerRadius: 14,
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // Results sheet
           Positioned(
             bottom: 0,
             left: 0,
@@ -218,10 +130,10 @@ class _RealtimeCameraBodyState extends State<_RealtimeCameraBody>
             ),
           ),
 
-          // Top Info Banner
+          // Scanning banner
           if (_isStreamingEnabled)
             Positioned(
-              top: 100,
+              top: 85,
               left: 20,
               right: 20,
               child: Container(
@@ -577,69 +489,4 @@ class _ConfidenceBar extends StatelessWidget {
       ),
     );
   }
-}
-
-class _CornerBracketsPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.8)
-      ..strokeWidth = 4
-      ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke;
-
-    const cornerLength = 30.0;
-    const padding = 0.0;
-
-    // Top-left
-    canvas.drawLine(
-      Offset(padding, padding + cornerLength),
-      Offset(padding, padding),
-      paint,
-    );
-    canvas.drawLine(
-      Offset(padding, padding),
-      Offset(padding + cornerLength, padding),
-      paint,
-    );
-
-    // Top-right
-    canvas.drawLine(
-      Offset(size.width - padding - cornerLength, padding),
-      Offset(size.width - padding, padding),
-      paint,
-    );
-    canvas.drawLine(
-      Offset(size.width - padding, padding),
-      Offset(size.width - padding, padding + cornerLength),
-      paint,
-    );
-
-    // Bottom-left
-    canvas.drawLine(
-      Offset(padding, size.height - padding - cornerLength),
-      Offset(padding, size.height - padding),
-      paint,
-    );
-    canvas.drawLine(
-      Offset(padding, size.height - padding),
-      Offset(padding + cornerLength, size.height - padding),
-      paint,
-    );
-
-    // Bottom-right
-    canvas.drawLine(
-      Offset(size.width - padding - cornerLength, size.height - padding),
-      Offset(size.width - padding, size.height - padding),
-      paint,
-    );
-    canvas.drawLine(
-      Offset(size.width - padding, size.height - padding - cornerLength),
-      Offset(size.width - padding, size.height - padding),
-      paint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
