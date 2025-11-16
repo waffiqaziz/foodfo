@@ -1,4 +1,4 @@
-package com.example.food_fo
+package com.waffiq.foodfo
 
 import io.flutter.embedding.android.FlutterActivity
 

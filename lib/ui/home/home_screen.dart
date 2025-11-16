@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:food_fo/controller/home_provider.dart';
-import 'package:food_fo/theme/crop_image_theme.dart';
-import 'package:food_fo/ui/home/food_results_card.dart';
-import 'package:food_fo/ui/home/image_preview_card.dart';
-import 'package:food_fo/ui/home/image_source_button.dart';
-import 'package:food_fo/ui/home/info_card.dart';
+import 'package:foodfo/controller/home_provider.dart';
+import 'package:foodfo/theme/crop_image_theme.dart';
+import 'package:foodfo/ui/home/food_results_card.dart';
+import 'package:foodfo/ui/home/image_preview_card.dart';
+import 'package:foodfo/ui/home/image_source_button.dart';
+import 'package:foodfo/ui/home/info_card.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -174,7 +174,71 @@ class HomeScreen extends StatelessWidget {
                     },
                   ),
 
+                  const SizedBox(height: 12),
+                   Consumer<HomeProvider>(
+                    builder: (context, provider, child) {
+                      final hasImage = provider.imagePath != null;
+
+                      if (provider.hasError && provider.errorMessage != null) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.error_outline,
+                                    color: Colors.white,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(child: Text(provider.errorMessage!)),
+                                ],
+                              ),
+                              backgroundColor: Colors.red.shade700,
+                              behavior: SnackBarBehavior.floating,
+                              duration: const Duration(seconds: 4),
+                              action: SnackBarAction(
+                                label: 'Dismiss',
+                                textColor: Colors.white,
+                                onPressed: () {
+                                  ScaffoldMessenger.of(
+                                    context,
+                                  ).hideCurrentSnackBar();
+                                },
+                              ),
+                            ),
+                          );
+                          provider.clearError();
+                        });
+                      }
+
+                      return FilledButton.icon(
+                        onPressed: hasImage && !provider.isAnalyzing
+                            ? () => provider.analyzeImage()
+                            : null,
+                        icon: provider.isAnalyzing
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Icon(Icons.restaurant_menu),
+                        label: Text(
+                          provider.isAnalyzing
+                              ? 'Analyzing...'
+                              : 'Identify Food via Cloud',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                   const SizedBox(height: 24),
+
 
                   // Info Card
                   InfoCard(),

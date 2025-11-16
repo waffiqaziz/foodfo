@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:food_fo/controller/food_detail_provider.dart';
-import 'package:food_fo/ui/detail/detail_body.dart';
-import 'package:food_fo/ui/detail/error_view.dart';
+import 'package:foodfo/controller/food_detail_provider.dart';
+import 'package:foodfo/ui/detail/detail_body.dart';
+import 'package:foodfo/ui/detail/error_view.dart';
 import 'package:provider/provider.dart';
 
 class FoodDetailScreen extends StatefulWidget {

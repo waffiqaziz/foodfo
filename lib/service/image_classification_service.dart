@@ -2,8 +2,8 @@ import 'dart:isolate';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
-import 'package:food_fo/service/isolate_inference.dart';
-import 'package:food_fo/utils/helper.dart';
+import 'package:foodfo/service/isolate_inference.dart';
+import 'package:foodfo/utils/helper.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
 class ImageClassificationService {

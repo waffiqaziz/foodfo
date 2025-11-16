@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:food_fo/model/meal_response.dart';
-import 'package:food_fo/utils/helper.dart';
+import 'package:foodfo/model/meal_response.dart';
+import 'package:foodfo/utils/helper.dart';
 import 'package:http/http.dart' as http;
 
 class FoodDetailProvider extends ChangeNotifier {

@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:food_fo/utils/helper.dart';
+import 'package:foodfo/utils/helper.dart';
 
 class CustomCameraPage extends StatelessWidget {
   const CustomCameraPage({super.key});

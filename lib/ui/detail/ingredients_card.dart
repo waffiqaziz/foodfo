@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:food_fo/model/meal_response.dart';
+import 'package:foodfo/model/meal_response.dart';
 
 class IngredientsCard extends StatelessWidget {
   final List<Ingredient> ingredients;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:food_fo/ui/detail/detail_page.dart';
+import 'package:foodfo/ui/detail/detail_page.dart';
 
 class FoodResultsCard extends StatelessWidget {
   final Map<String, num> classifications;

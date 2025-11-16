@@ -1,9 +1,9 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:food_fo/controller/image_classification_provider.dart';
-import 'package:food_fo/service/image_classification_service.dart';
-import 'package:food_fo/ui/camera/camera_view.dart';
-import 'package:food_fo/ui/camera/rounded_corner_border.dart';
+import 'package:foodfo/controller/image_classification_provider.dart';
+import 'package:foodfo/service/image_classification_service.dart';
+import 'package:foodfo/ui/camera/camera_view.dart';
+import 'package:foodfo/ui/camera/rounded_corner_border.dart';
 import 'package:provider/provider.dart';
 
 class RealtimeCameraPage extends StatelessWidget {

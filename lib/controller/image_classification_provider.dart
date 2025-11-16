@@ -1,6 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
-import 'package:food_fo/service/image_classification_service.dart';
+import 'package:foodfo/service/image_classification_service.dart';
 
 class ImageClassificationViewmodel extends ChangeNotifier {
   final ImageClassificationService _service;

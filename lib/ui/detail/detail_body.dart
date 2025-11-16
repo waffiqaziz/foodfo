@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:food_fo/model/meal_response.dart';
-import 'package:food_fo/ui/detail/ingredients_card.dart';
-import 'package:food_fo/ui/detail/instructions_card.dart';
-import 'package:food_fo/ui/detail/section_header.dart';
+import 'package:foodfo/model/meal_response.dart';
+import 'package:foodfo/ui/detail/ingredients_card.dart';
+import 'package:foodfo/ui/detail/instructions_card.dart';
+import 'package:foodfo/ui/detail/section_header.dart';
 
 class DetailBody extends StatelessWidget {
   final MealDetail meal;

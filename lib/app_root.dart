@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:food_fo/controller/food_detail_provider.dart';
-import 'package:food_fo/controller/home_provider.dart';
-import 'package:food_fo/controller/image_classification_provider.dart';
-import 'package:food_fo/theme/theme.dart';
-import 'package:food_fo/theme/util.dart';
-import 'package:food_fo/service/image_classification_service.dart';
-import 'package:food_fo/ui/home/home_screen.dart';
+import 'package:foodfo/controller/food_detail_provider.dart';
+import 'package:foodfo/controller/home_provider.dart';
+import 'package:foodfo/controller/image_classification_provider.dart';
+import 'package:foodfo/theme/theme.dart';
+import 'package:foodfo/theme/util.dart';
+import 'package:foodfo/service/image_classification_service.dart';
+import 'package:foodfo/ui/home/home_screen.dart';
 import 'package:provider/provider.dart';
 
 class AppRoot extends StatelessWidget {

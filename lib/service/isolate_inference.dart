@@ -3,8 +3,8 @@ import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
-import 'package:food_fo/utils/helper.dart';
-import 'package:food_fo/utils/image_utils.dart';
+import 'package:foodfo/utils/helper.dart';
+import 'package:foodfo/utils/image_utils.dart';
 import 'package:image/image.dart' as image_lib;
 import 'package:tflite_flutter/tflite_flutter.dart';
 

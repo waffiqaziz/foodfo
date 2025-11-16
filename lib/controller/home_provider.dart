@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:food_fo/service/image_classification_service.dart';
-import 'package:food_fo/theme/crop_image_theme.dart';
-import 'package:food_fo/ui/camera/custom_camera_page.dart';
-import 'package:food_fo/ui/camera/real_time_camera_page.dart';
-import 'package:food_fo/utils/helper.dart';
+import 'package:foodfo/service/image_classification_service.dart';
+import 'package:foodfo/theme/crop_image_theme.dart';
+import 'package:foodfo/ui/camera/custom_camera_page.dart';
+import 'package:foodfo/ui/camera/real_time_camera_page.dart';
+import 'package:foodfo/utils/helper.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
