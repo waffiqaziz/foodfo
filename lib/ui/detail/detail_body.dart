@@ -2,15 +2,31 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:foodfo/model/meal_response.dart';
+import 'package:foodfo/model/nutrition_response.dart';
 import 'package:foodfo/ui/detail/ingredients_card.dart';
 import 'package:foodfo/ui/detail/instructions_card.dart';
+import 'package:foodfo/ui/detail/nutrition_card.dart';
 import 'package:foodfo/ui/detail/section_header.dart';
 
 class DetailBody extends StatelessWidget {
   final MealDetail meal;
   final String imagePath;
+  final double confidence;
+  final NutritionInfo? nutritionInfo;
+  final bool isLoadingNutrition;
+  final String? nutritionError;
+  final VoidCallback onRetryNutrition;
 
-  const DetailBody({super.key, required this.meal, required this.imagePath});
+  const DetailBody({
+    super.key,
+    required this.meal,
+    required this.imagePath,
+    required this.confidence,
+    this.nutritionInfo,
+    required this.isLoadingNutrition,
+    this.nutritionError,
+    required this.onRetryNutrition,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +101,39 @@ class DetailBody extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // confidence
+                Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.verified,
+                          size: 18,
+                          color: colorScheme.onPrimaryContainer,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '${(confidence * 100).toStringAsFixed(1)}% Confidence',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: colorScheme.onPrimaryContainer,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
                 // category meal
                 Wrap(
                   spacing: 8,
@@ -103,6 +152,20 @@ class DetailBody extends StatelessWidget {
                         backgroundColor: colorScheme.tertiaryContainer,
                       ),
                   ],
+                ),
+
+                const SizedBox(height: 24),
+
+                SectionHeader(
+                  icon: Icons.monitor_heart_outlined,
+                  title: 'Nutritional Information',
+                ),
+                const SizedBox(height: 12),
+                NutritionCard(
+                  nutritionInfo: nutritionInfo,
+                  isLoading: isLoadingNutrition,
+                  error: nutritionError,
+                  onRetry: onRetryNutrition,
                 ),
 
                 const SizedBox(height: 24),

@@ -1,61 +1,102 @@
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:foodfo/model/meal_response.dart';
+import 'package:foodfo/model/nutrition_response.dart';
+import 'package:foodfo/service/meal_service.dart';
+import 'package:foodfo/service/nutrition_service.dart';
 import 'package:foodfo/utils/helper.dart';
-import 'package:http/http.dart' as http;
 
 class FoodDetailProvider extends ChangeNotifier {
+  final MealService _mealService;
+  final NutritionService _nutritionService;
+
+  FoodDetailProvider(this._mealService, this._nutritionService);
+
   MealDetail? _mealDetail;
-  bool _isLoading = false;
-  bool _hasError = false;
-  String? _errorMessage;
+  bool _isMealLoading = false;
+  String? _mealError;
+
+  NutritionInfo? _nutritionInfo;
+  bool _isNutritionLoading = false;
+  String? _nutritionError;
 
   MealDetail? get mealDetail => _mealDetail;
-  bool get isLoading => _isLoading;
-  bool get hasError => _hasError;
-  String? get errorMessage => _errorMessage;
+  bool get isMealLoading => _isMealLoading;
+  String? get mealError => _mealError;
 
+  NutritionInfo? get nutritionInfo => _nutritionInfo;
+  bool get isNutritionLoading => _isNutritionLoading;
+  String? get nutritionError => _nutritionError;
+
+  bool get hasError => _mealError != null;
+  bool get isLoading => _isMealLoading || _isNutritionLoading;
+
+  // fetch all
   Future<void> fetchFoodDetails(String foodName) async {
-    _isLoading = true;
-    _hasError = false;
-    _errorMessage = null;
+    await _fetchMealDetails(foodName);
+
+    if (_mealDetail != null) {
+      await _fetchNutritionInfo(foodName);
+    }
+  }
+
+  Future<void> _fetchMealDetails(String foodName) async {
+    _isMealLoading = true;
+    _mealError = null;
+    _mealDetail = null;
     notifyListeners();
 
     try {
-      final url = Uri.parse(
-        'https://www.themealdb.com/api/json/v1/1/search.php?s=${foodName.trim()}',
-      );
+      _mealDetail = await _mealService.fetchMealDetail(foodName);
 
-      final response = await http.get(url);
-
-      if (response.statusCode != 200) {
-        throw Exception('Failed to load data: ${response.statusCode}');
-      }
-
-      final data = json.decode(response.body);
-      final mealResponse = MealResponse.fromJson(data);
-
-      if (mealResponse.meals != null && mealResponse.meals!.isNotEmpty) {
-        _mealDetail = mealResponse.meals!.first;
-        logger.d('Response: ${_mealDetail!.name}');
+      if (_mealDetail != null) {
+        logger.d('Meal loaded: ${_mealDetail!.name}');
       } else {
-        // Try first letter search as fallback
-        logger.e('Empty response');
+        _mealError = 'No recipe found for "$foodName"';
       }
     } catch (e) {
-      logger.e('Error: $e');
-      _hasError = true;
-      _errorMessage = 'Failed to load recipe details';
+      logger.e('Meal fetch error: $e');
+      _mealError = 'Failed to load recipe details';
     } finally {
-      _isLoading = false;
+      _isMealLoading = false;
       notifyListeners();
     }
   }
 
-  void clearError() {
-    _hasError = false;
-    _errorMessage = null;
+  Future<void> _fetchNutritionInfo(String foodName) async {
+    _isNutritionLoading = true;
+    _nutritionError = null;
+    _nutritionInfo = null;
     notifyListeners();
+
+    try {
+      _nutritionInfo = await _nutritionService.fetchNutritionInfo(foodName);
+      logger.d('Nutrition loaded: ${_nutritionInfo.toString()}');
+    } catch (e) {
+      logger.e('Nutrition fetch error: $e');
+      _nutritionError = 'Failed to load nutrition info';
+    } finally {
+      _isNutritionLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> retryNutritionInfo(String foodName) async {
+    await _fetchNutritionInfo(foodName);
+  }
+
+  Future<void> retryMealDetails(String foodName) async {
+    await fetchFoodDetails(foodName);
+  }
+
+  void clearErrors() {
+    _mealError = null;
+    _nutritionError = null;
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _mealService.dispose();
+    super.dispose();
   }
 }

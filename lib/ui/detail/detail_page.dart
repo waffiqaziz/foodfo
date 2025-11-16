@@ -7,11 +7,13 @@ import 'package:provider/provider.dart';
 class FoodDetailScreen extends StatefulWidget {
   final String foodName;
   final String imagePath;
+  final double confidence;
 
   const FoodDetailScreen({
     super.key,
     required this.foodName,
     required this.imagePath,
+    required this.confidence,
   });
 
   @override
@@ -21,12 +23,15 @@ class FoodDetailScreen extends StatefulWidget {
 class _FoodDetailScreenState extends State<FoodDetailScreen> {
   @override
   void initState() {
-    Future.microtask(() {
-      if (mounted) {
-        context.read<FoodDetailProvider>().fetchFoodDetails(widget.foodName);
-      }
-    });
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadData();
+    });
+  }
+
+  void _loadData() {
+    if (!mounted) return;
+    context.read<FoodDetailProvider>().fetchFoodDetails(widget.foodName);
   }
 
   @override
@@ -34,24 +39,34 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
     return Scaffold(
       body: Consumer<FoodDetailProvider>(
         builder: (context, provider, child) {
-          if (provider.isLoading) {
+          // Show loading for meal details
+          if (provider.isMealLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
+          // Show error for meal details
           if (provider.hasError) {
             return ErrorView(
-              message: provider.errorMessage ?? 'Failed to load food details',
-              onRetry: () => provider.fetchFoodDetails(widget.foodName),
+              message: provider.mealError ?? 'Failed to load food details',
+              onRetry: _loadData,
             );
           }
 
+          // Show empty state
           if (provider.mealDetail == null) {
             return const Center(child: Text('No data available'));
           }
 
+          // Show detail body
           return DetailBody(
             meal: provider.mealDetail!,
             imagePath: widget.imagePath,
+            confidence: widget.confidence,
+            nutritionInfo: provider.nutritionInfo,
+            isLoadingNutrition: provider.isNutritionLoading,
+            nutritionError: provider.nutritionError,
+            onRetryNutrition: () =>
+                provider.retryNutritionInfo(widget.foodName),
           );
         },
       ),

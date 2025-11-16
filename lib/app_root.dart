@@ -4,6 +4,8 @@ import 'package:foodfo/controller/home_provider.dart';
 import 'package:foodfo/controller/image_classification_provider.dart';
 import 'package:foodfo/service/asset_model_service.dart';
 import 'package:foodfo/service/firebase_model_service.dart';
+import 'package:foodfo/service/meal_service.dart';
+import 'package:foodfo/service/nutrition_service.dart';
 import 'package:foodfo/theme/theme.dart';
 import 'package:foodfo/theme/util.dart';
 import 'package:foodfo/ui/home/home_screen.dart';
@@ -19,6 +21,8 @@ class AppRoot extends StatelessWidget {
 
     return MultiProvider(
       providers: [
+        Provider(create: (_) => MealService()),
+        Provider(create: (_) => NutritionService()),
         Provider(create: (_) => AssetModelService()),
         Provider(create: (_) => FirebaseModelService()),
         ChangeNotifierProvider(
@@ -32,7 +36,12 @@ class AppRoot extends StatelessWidget {
             context.read<FirebaseModelService>(),
           ),
         ),
-        ChangeNotifierProvider(create: (_) => FoodDetailProvider()),
+        ChangeNotifierProvider(
+          create: (context) => FoodDetailProvider(
+            context.read<MealService>(),
+            context.read<NutritionService>(),
+          ),
+        ),
       ],
       child: MaterialApp(
         title: 'FoodFo',

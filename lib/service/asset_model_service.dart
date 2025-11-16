@@ -9,7 +9,7 @@ import 'package:tflite_flutter/tflite_flutter.dart';
 
 class AssetModelService implements IImageClassificationService {
   late final IsolateInference isolateInference;
-  
+
   final modelPath = 'assets/models/model.tflite';
   final labelsPath = 'assets/models/labels.txt';
   late final Interpreter interpreter;
@@ -18,7 +18,7 @@ class AssetModelService implements IImageClassificationService {
   late Tensor outputTensor;
 
   bool _isInitialized = false;
-  
+
   @override
   bool get isInitialized => _isInitialized;
 

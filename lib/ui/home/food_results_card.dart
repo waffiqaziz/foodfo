@@ -28,6 +28,7 @@ class FoodResultsCard extends StatelessWidget {
                     builder: (context) => FoodDetailScreen(
                       foodName: entries[0].key,
                       imagePath: imagePath!,
+                      confidence: entries[0].value.toDouble(),
                     ),
                   ),
                 );
