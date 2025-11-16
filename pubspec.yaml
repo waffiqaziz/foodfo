@@ -26,6 +26,9 @@ dependencies:
   flutter_native_splash: ^2.4.7
   google_fonts: ^6.3.2
 
+  firebase_core: ^4.2.1
+  firebase_ml_model_downloader: ^0.4.0+4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,36 +1,18 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:foodfo/controller/image_classification_provider.dart';
-import 'package:foodfo/service/image_classification_service.dart';
 import 'package:foodfo/ui/camera/camera_view.dart';
 import 'package:foodfo/ui/camera/rounded_corner_border.dart';
 import 'package:provider/provider.dart';
 
-class RealtimeCameraPage extends StatelessWidget {
+class RealtimeCameraPage extends StatefulWidget {
   const RealtimeCameraPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => ImageClassificationViewmodel(
-        context.read<ImageClassificationService>(),
-      ),
-      child: Theme(
-        data: ThemeData.dark(useMaterial3: true),
-        child: const _RealtimeCameraBody(),
-      ),
-    );
-  }
+  State<RealtimeCameraPage> createState() => RealtimeCameraBodySPage();
 }
 
-class _RealtimeCameraBody extends StatefulWidget {
-  const _RealtimeCameraBody();
-
-  @override
-  State<_RealtimeCameraBody> createState() => _RealtimeCameraBodyState();
-}
-
-class _RealtimeCameraBodyState extends State<_RealtimeCameraBody> {
+class RealtimeCameraBodySPage extends State<RealtimeCameraPage> {
   bool _isStreamingEnabled = true;
   late ImageClassificationViewmodel _viewModel;
   bool _isDisposed = false;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:foodfo/service/image_classification_service.dart';
+import 'package:foodfo/service/asset_model_service.dart';
+import 'package:foodfo/service/firebase_model_service.dart';
 import 'package:foodfo/theme/crop_image_theme.dart';
 import 'package:foodfo/ui/camera/custom_camera_page.dart';
 import 'package:foodfo/ui/camera/real_time_camera_page.dart';
@@ -8,10 +9,11 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
 class HomeProvider extends ChangeNotifier {
-  final ImageClassificationService _classificationService;
+  final AssetModelService _assetModelService;
+  final FirebaseModelService _firebaseModelService;
 
-  HomeProvider(this._classificationService) {
-    _initializeService();
+  HomeProvider(this._assetModelService, this._firebaseModelService) {
+    _initializeServices();
   }
 
   String? imagePath;
@@ -22,19 +24,19 @@ class HomeProvider extends ChangeNotifier {
   String? errorMessage;
   bool hasError = false;
 
-  Future<void> _initializeService() async {
+  Future<void> _initializeServices() async {
     try {
-      await _classificationService.initHelper();
+      // Initialize both services
+      await _assetModelService.initHelper();
+      await _firebaseModelService.initHelper();
     } catch (e) {
-      logger.e('Failed to initialize classification service: $e');
+      logger.e('Failed to initialize services: $e');
     }
   }
 
   void _setImage(XFile? value) {
     imageFile = value;
     imagePath = value?.path;
-
-    // Clear previous results when new image is selected
     classifications = {};
     notifyListeners();
   }
@@ -119,7 +121,8 @@ class HomeProvider extends ChangeNotifier {
     );
   }
 
-  Future<void> analyzeImage() async {
+  // analyze with local asset model
+  Future<void> analyzeImageLocal() async {
     if (imagePath == null || imageFile == null) return;
 
     isAnalyzing = true;
@@ -127,20 +130,38 @@ class HomeProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Read image bytes
       final bytes = await imageFile!.readAsBytes();
-
-      // Run classification using isolate (prevent freeze UI)
-      classifications = await _classificationService.inferenceStaticImage(
-        bytes,
-      );
-
+      classifications = await _assetModelService.inferenceStaticImage(bytes);
       hasError = false;
-      logger.d("Classification successful: $classifications");
+      logger.d("Local classification successful: $classifications");
     } catch (e) {
-      logger.e('Classification failed: $e');
+      logger.e('Local classification failed: $e');
       hasError = true;
-      errorMessage = 'Analysis failed: please try again later';
+      errorMessage = 'Local analysis failed: please try again';
+      classifications = {};
+    } finally {
+      isAnalyzing = false;
+      notifyListeners();
+    }
+  }
+
+  // // analyze with cloud firebase asset model
+  Future<void> analyzeImageCloud() async {
+    if (imagePath == null || imageFile == null) return;
+
+    isAnalyzing = true;
+    _resetAnalysisState();
+    notifyListeners();
+
+    try {
+      final bytes = await imageFile!.readAsBytes();
+      classifications = await _firebaseModelService.inferenceStaticImage(bytes);
+      hasError = false;
+      logger.d("Cloud classification successful: $classifications");
+    } catch (e) {
+      logger.e('Cloud classification failed: $e');
+      hasError = true;
+      errorMessage = 'Cloud analysis failed: please check connection';
       classifications = {};
     } finally {
       isAnalyzing = false;
@@ -163,7 +184,8 @@ class HomeProvider extends ChangeNotifier {
 
   @override
   void dispose() {
-    _classificationService.close();
+    _assetModelService.close();
+    _firebaseModelService.close();
     super.dispose();
   }
 }

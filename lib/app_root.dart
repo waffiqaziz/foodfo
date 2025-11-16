@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:foodfo/controller/food_detail_provider.dart';
 import 'package:foodfo/controller/home_provider.dart';
 import 'package:foodfo/controller/image_classification_provider.dart';
+import 'package:foodfo/service/asset_model_service.dart';
+import 'package:foodfo/service/firebase_model_service.dart';
 import 'package:foodfo/theme/theme.dart';
 import 'package:foodfo/theme/util.dart';
-import 'package:foodfo/service/image_classification_service.dart';
 import 'package:foodfo/ui/home/home_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -18,14 +19,17 @@ class AppRoot extends StatelessWidget {
 
     return MultiProvider(
       providers: [
-        Provider(create: (_) => ImageClassificationService()),
+        Provider(create: (_) => AssetModelService()),
+        Provider(create: (_) => FirebaseModelService()),
         ChangeNotifierProvider(
-          create: (context) =>
-              HomeProvider(context.read<ImageClassificationService>()),
+          create: (context) => HomeProvider(
+            context.read<AssetModelService>(),
+            context.read<FirebaseModelService>(),
+          ),
         ),
         ChangeNotifierProvider(
           create: (context) => ImageClassificationViewmodel(
-            context.read<ImageClassificationService>(),
+            context.read<FirebaseModelService>(),
           ),
         ),
         ChangeNotifierProvider(create: (_) => FoodDetailProvider()),

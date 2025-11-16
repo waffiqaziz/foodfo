@@ -110,7 +110,7 @@ class HomeScreen extends StatelessWidget {
 
                   const SizedBox(height: 16),
 
-                  // Analyze Button
+                  // local analyze
                   Consumer<HomeProvider>(
                     builder: (context, provider, child) {
                       final hasImage = provider.imagePath != null;
@@ -149,7 +149,7 @@ class HomeScreen extends StatelessWidget {
 
                       return FilledButton.icon(
                         onPressed: hasImage && !provider.isAnalyzing
-                            ? () => provider.analyzeImage()
+                            ? () => provider.analyzeImageLocal()
                             : null,
                         icon: provider.isAnalyzing
                             ? const SizedBox(
@@ -164,7 +164,7 @@ class HomeScreen extends StatelessWidget {
                         label: Text(
                           provider.isAnalyzing
                               ? 'Analyzing...'
-                              : 'Identify Food',
+                              : 'Identify Food (Local)',
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -173,47 +173,16 @@ class HomeScreen extends StatelessWidget {
                       );
                     },
                   ),
-
                   const SizedBox(height: 12),
-                   Consumer<HomeProvider>(
+
+                  // cloud analyze
+                  Consumer<HomeProvider>(
                     builder: (context, provider, child) {
                       final hasImage = provider.imagePath != null;
 
-                      if (provider.hasError && provider.errorMessage != null) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.error_outline,
-                                    color: Colors.white,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(child: Text(provider.errorMessage!)),
-                                ],
-                              ),
-                              backgroundColor: Colors.red.shade700,
-                              behavior: SnackBarBehavior.floating,
-                              duration: const Duration(seconds: 4),
-                              action: SnackBarAction(
-                                label: 'Dismiss',
-                                textColor: Colors.white,
-                                onPressed: () {
-                                  ScaffoldMessenger.of(
-                                    context,
-                                  ).hideCurrentSnackBar();
-                                },
-                              ),
-                            ),
-                          );
-                          provider.clearError();
-                        });
-                      }
-
-                      return FilledButton.icon(
+                      return OutlinedButton.icon(
                         onPressed: hasImage && !provider.isAnalyzing
-                            ? () => provider.analyzeImage()
+                            ? () => provider.analyzeImageCloud()
                             : null,
                         icon: provider.isAnalyzing
                             ? const SizedBox(
@@ -221,14 +190,13 @@ class HomeScreen extends StatelessWidget {
                                 height: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  color: Colors.white,
                                 ),
                               )
-                            : const Icon(Icons.restaurant_menu),
+                            : const Icon(Icons.cloud_outlined),
                         label: Text(
                           provider.isAnalyzing
                               ? 'Analyzing...'
-                              : 'Identify Food via Cloud',
+                              : 'Identify Food (Cloud)',
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -238,9 +206,6 @@ class HomeScreen extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 24),
-
-
-                  // Info Card
                   InfoCard(),
                 ],
               ),

@@ -1,12 +1,12 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
-import 'package:foodfo/service/image_classification_service.dart';
+import 'package:foodfo/service/firebase_model_service.dart';
 
 class ImageClassificationViewmodel extends ChangeNotifier {
-  final ImageClassificationService _service;
+  final FirebaseModelService _firebaseModelService;
 
-  ImageClassificationViewmodel(this._service) {
-    _service.initHelper();
+  ImageClassificationViewmodel(this._firebaseModelService) {
+    _firebaseModelService.initHelper();
   }
 
   Map<String, num> _classifications = {};
@@ -18,7 +18,7 @@ class ImageClassificationViewmodel extends ChangeNotifier {
   );
 
   Future<void> runClassification(CameraImage camera) async {
-    _classifications = await _service.inferenceCameraFrame(camera);
+    _classifications = await _firebaseModelService.inferenceCameraFrame(camera);
     notifyListeners();
   }
 }

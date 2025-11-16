@@ -2,13 +2,14 @@ import 'dart:isolate';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
+import 'package:foodfo/service/i_image_classification_service.dart';
 import 'package:foodfo/service/isolate_inference.dart';
 import 'package:foodfo/utils/helper.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
-class ImageClassificationService {
+class AssetModelService implements IImageClassificationService {
   late final IsolateInference isolateInference;
-
+  
   final modelPath = 'assets/models/model.tflite';
   final labelsPath = 'assets/models/labels.txt';
   late final Interpreter interpreter;
@@ -17,10 +18,14 @@ class ImageClassificationService {
   late Tensor outputTensor;
 
   bool _isInitialized = false;
+  
+  @override
+  bool get isInitialized => _isInitialized;
 
+  @override
   Future<void> initHelper() async {
     if (_isInitialized) {
-      logger.d('Service already initialized, skipping...');
+      logger.d('Asset model service already initialized, skipping...');
       return;
     }
 
@@ -30,7 +35,7 @@ class ImageClassificationService {
     await isolateInference.start();
 
     _isInitialized = true;
-    logger.d('Service initialized successfully');
+    logger.d('Asset model service initialized successfully');
   }
 
   Future<void> _loadModel() async {
@@ -42,7 +47,7 @@ class ImageClassificationService {
     inputTensor = interpreter.getInputTensors().first;
     outputTensor = interpreter.getOutputTensors().first;
 
-    logger.d('Interpreter loaded successfully');
+    logger.d('Asset interpreter loaded successfully');
     logger.d('Input shape: ${inputTensor.shape}');
     logger.d('Output shape: ${outputTensor.shape}');
   }
@@ -53,10 +58,10 @@ class ImageClassificationService {
         .split('\n')
         .where((label) => label.trim().isNotEmpty)
         .toList();
-    logger.d('Loaded ${labels.length} labels');
+    logger.d('Loaded ${labels.length} labels from assets');
   }
 
-  // For camera stream (real-time classification)
+  @override
   Future<Map<String, double>> inferenceCameraFrame(
     CameraImage cameraImage,
   ) async {
@@ -76,7 +81,7 @@ class ImageClassificationService {
     return results;
   }
 
-  // For static images (gallery/camera capture) - runs in isolate
+  @override
   Future<Map<String, double>> inferenceStaticImage(Uint8List imageBytes) async {
     var isolateModel = InferenceModel.fromBytes(
       imageBytes,
@@ -95,6 +100,7 @@ class ImageClassificationService {
     return results;
   }
 
+  @override
   Future<void> close() async {
     await isolateInference.close();
     interpreter.close();

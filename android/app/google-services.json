@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "739425858508",
+    "project_id": "foodfo-flutter",
+    "storage_bucket": "foodfo-flutter.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:739425858508:android:6172710c1b96065c8fe369",
+        "android_client_info": {
+          "package_name": "com.waffiq.foodfo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXqpi9-XosFtioCrfs7bbGr_tC790e47U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
