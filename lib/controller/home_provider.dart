@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:food_fo/service/image_classification_service.dart';
+import 'package:food_fo/theme/crop_image_theme.dart';
 import 'package:food_fo/ui/camera/custom_camera_page.dart';
 import 'package:food_fo/ui/camera/real_time_camera_page.dart';
 import 'package:food_fo/utils/helper.dart';
@@ -32,20 +33,21 @@ class HomeProvider extends ChangeNotifier {
   void _setImage(XFile? value) {
     imageFile = value;
     imagePath = value?.path;
+
     // Clear previous results when new image is selected
     classifications = {};
     notifyListeners();
   }
 
-  Future<void> _cropImage(String sourcePath) async {
+  Future<void> _cropImage(String sourcePath, CropImageTheme theme) async {
     final croppedFile = await ImageCropper().cropImage(
       sourcePath: sourcePath,
       compressQuality: 100,
       uiSettings: [
         AndroidUiSettings(
           toolbarTitle: 'Crop Image',
-          toolbarColor: const Color(0xFF6750A4),
-          toolbarWidgetColor: Colors.white,
+          toolbarColor: theme.toolbarColor,
+          toolbarWidgetColor: theme.toolbarWidgetColor,
           initAspectRatio: CropAspectRatioPreset.square,
           lockAspectRatio: false,
           aspectRatioPresets: [
@@ -55,18 +57,18 @@ class HomeProvider extends ChangeNotifier {
             CropAspectRatioPreset.ratio4x3,
             CropAspectRatioPreset.ratio16x9,
           ],
-          backgroundColor: Colors.black,
-          activeControlsWidgetColor: const Color(0xFF6750A4),
-          cropFrameColor: const Color(0xFF6750A4),
-          cropGridColor: Colors.white38,
+          backgroundColor: theme.backgroundColor,
+          activeControlsWidgetColor: theme.activeControlsColor,
+          cropFrameColor: theme.cropFrameColor,
+          cropGridColor: theme.cropGridColor,
           cropFrameStrokeWidth: 4,
           cropGridRowCount: 3,
           cropGridColumnCount: 3,
           cropGridStrokeWidth: 2,
           showCropGrid: true,
           hideBottomControls: false,
-          dimmedLayerColor: Colors.black.withValues(alpha: 0.8),
-          statusBarLight: true,
+          dimmedLayerColor: theme.dimmedLayerColor,
+          statusBarLight: theme.statusBarLight,
         ),
       ],
     );
@@ -78,32 +80,35 @@ class HomeProvider extends ChangeNotifier {
     }
   }
 
-  void openCamera() async {
+  Future<void> openCamera(CropImageTheme theme) async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.camera);
 
     if (pickedFile != null) {
-      await _cropImage(pickedFile.path);
+      await _cropImage(pickedFile.path, theme);
     }
   }
 
-  void openGallery() async {
+  Future<void> openGallery(CropImageTheme theme) async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      await _cropImage(pickedFile.path);
+      await _cropImage(pickedFile.path, theme);
     }
   }
 
-  void openCustomCamera(BuildContext context) async {
+  Future<void> openCustomCamera(
+    BuildContext context,
+    CropImageTheme theme,
+  ) async {
     final XFile? resultImageFile = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => CustomCameraPage()),
     );
 
     if (resultImageFile != null) {
-      await _cropImage(resultImageFile.path);
+      await _cropImage(resultImageFile.path, theme);
     }
   }
 

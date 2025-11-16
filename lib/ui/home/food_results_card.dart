@@ -5,7 +5,11 @@ class FoodResultsCard extends StatelessWidget {
   final Map<String, num> classifications;
   final String? imagePath; // Add this parameter
 
-  const FoodResultsCard({required this.classifications, this.imagePath});
+  const FoodResultsCard({
+    super.key,
+    required this.classifications,
+    this.imagePath,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +79,7 @@ class FoodResultsCard extends StatelessWidget {
               // Other predictions
               if (entries.length > 1) ...[
                 const SizedBox(height: 20),
-                const Divider(),
+                Divider(color: Theme.of(context).colorScheme.outline),
                 const SizedBox(height: 12),
                 Text(
                   'Other possibilities:',

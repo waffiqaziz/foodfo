@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:food_fo/controller/home_provider.dart';
+import 'package:food_fo/theme/crop_image_theme.dart';
 import 'package:food_fo/ui/home/food_results_card.dart';
 import 'package:food_fo/ui/home/image_preview_card.dart';
 import 'package:food_fo/ui/home/image_source_button.dart';
@@ -11,11 +12,20 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cropTheme = CropImageTheme.fromColorScheme(
+      theme.colorScheme,
+      theme.brightness,
+    );
+
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          SliverAppBar.medium(
-            title: const Text('Food Classification'),
+          SliverAppBar(
+            title: Text(
+              'Food Classification',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             floating: false,
             pinned: true,
           ),
@@ -63,16 +73,18 @@ class HomeScreen extends StatelessWidget {
                         child: ImageSourceButton(
                           icon: Icons.photo_library_outlined,
                           label: 'Gallery',
-                          onPressed: () =>
-                              context.read<HomeProvider>().openGallery(),
+                          onPressed: () => context
+                              .read<HomeProvider>()
+                              .openGallery(cropTheme),
                         ),
                       ),
                       Expanded(
                         child: ImageSourceButton(
                           icon: Icons.camera_alt_outlined,
                           label: 'Camera',
-                          onPressed: () =>
-                              context.read<HomeProvider>().openCamera(),
+                          onPressed: () => context
+                              .read<HomeProvider>()
+                              .openCamera(cropTheme),
                         ),
                       ),
                       Expanded(
@@ -81,7 +93,7 @@ class HomeScreen extends StatelessWidget {
                           label: 'Pro Camera',
                           onPressed: () => context
                               .read<HomeProvider>()
-                              .openCustomCamera(context),
+                              .openCustomCamera(context, cropTheme),
                         ),
                       ),
                       Expanded(

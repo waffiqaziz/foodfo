@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:food_fo/controller/food_detail_provider.dart';
 import 'package:food_fo/controller/home_provider.dart';
 import 'package:food_fo/controller/image_classification_provider.dart';
+import 'package:food_fo/theme/theme.dart';
+import 'package:food_fo/theme/util.dart';
 import 'package:food_fo/service/image_classification_service.dart';
-import 'package:food_fo/theme/app_theme.dart';
 import 'package:food_fo/ui/home/home_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -12,6 +13,9 @@ class AppRoot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TextTheme textTheme = createTextTheme(context, "Work Sans", "Nunito Sans");
+    MaterialTheme theme = MaterialTheme(textTheme);
+
     return MultiProvider(
       providers: [
         Provider(create: (_) => ImageClassificationService()),
@@ -28,8 +32,8 @@ class AppRoot extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'FoodFo',
-        theme: AppTheme.lightTheme(),
-        darkTheme: AppTheme.darkTheme(),
+        theme: theme.light(),
+        darkTheme: theme.dark(),
         themeMode: ThemeMode.system,
         home: const HomeScreen(),
       ),

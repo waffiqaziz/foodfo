@@ -31,7 +31,7 @@ class DetailBody extends StatelessWidget {
                     ? const EdgeInsetsDirectional.only(
                         start: 56,
                         end: 56,
-                        bottom: 18,
+                        bottom: 20,
                       )
                     : const EdgeInsetsDirectional.only(
                         start: 16,
@@ -41,7 +41,9 @@ class DetailBody extends StatelessWidget {
                 title: Text(
                   meal.name,
                   style: TextStyle(
-                    color: isCollapsed ? Colors.black : Colors.white,
+                    color: isCollapsed
+                        ? Theme.of(context).colorScheme.onSurface
+                        : Colors.white,
                     fontWeight: FontWeight.bold,
                     shadows: isCollapsed
                         ? []
