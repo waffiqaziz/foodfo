@@ -1,0 +1,59 @@
+name: build
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**/*.md'
+      - '**.md'
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - '**/*.md'
+      - '**.md'
+
+env:
+  FLUTTER_VERSION: 3.35.3
+
+permissions:
+  checks: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@395322a6cded4e9ed503aebd4cc1965625f8e59a
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Inject Gemini API KEY into .env
+        run: echo "GEMINI_API_KEY=Aiza }}" >> .env
+
+      - name: Generate API files
+        run: dart run build_runner build -d
+
+      - name: Check Dart format
+        run: |
+          echo "Checking Dart code format..."
+          if ! dart format --output=none --set-exit-if-changed lib; then
+            echo ""
+            echo "Some Dart files are not properly formatted."
+            echo "Please run 'dart format lib' locally and commit the changes."
+            exit 1
+          fi
+
+      - name: Analyze Dart code
+        run: flutter analyze --no-fatal-infos
+
+      - name: Build APK
+        run: flutter build apk -t lib/main.dart --debug
