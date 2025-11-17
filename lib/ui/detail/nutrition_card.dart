@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foodfo/model/nutrition_response.dart';
+import 'package:foodfo/ui/detail/error_view.dart';
 
 class NutritionCard extends StatelessWidget {
   final NutritionInfo? nutritionInfo;
@@ -20,10 +21,11 @@ class NutritionCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     if (isLoading) {
-      return Card(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Center(
+      return SizedBox(
+        width: double.infinity,
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
             child: Column(
               children: [
                 const CircularProgressIndicator(),
@@ -42,34 +44,10 @@ class NutritionCard extends StatelessWidget {
     }
 
     if (error != null) {
-      return Card(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            children: [
-              Icon(Icons.error_outline, size: 48, color: colorScheme.error),
-              const SizedBox(height: 16),
-              Text(
-                'Failed to load nutrition info',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(color: colorScheme.error),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                error!,
-                style: Theme.of(context).textTheme.bodySmall,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              FilledButton.icon(
-                onPressed: onRetry,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Retry'),
-              ),
-            ],
-          ),
-        ),
+      return ErrorView(
+        message: 'Failed to load nutrition info',
+        message2: error!,
+        onRetry: onRetry,
       );
     }
 
@@ -157,7 +135,7 @@ class _NutritionItem extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(icon, color: color, size: 24),

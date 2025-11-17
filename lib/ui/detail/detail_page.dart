@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foodfo/controller/food_detail_provider.dart';
 import 'package:foodfo/ui/detail/detail_body.dart';
-import 'package:foodfo/ui/detail/error_view.dart';
 import 'package:provider/provider.dart';
 
 class FoodDetailScreen extends StatefulWidget {
@@ -44,29 +43,11 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          // Show error for meal details
-          if (provider.hasError) {
-            return ErrorView(
-              message: provider.mealError ?? 'Failed to load food details',
-              onRetry: _loadData,
-            );
-          }
-
-          // Show empty state
-          if (provider.mealDetail == null) {
-            return const Center(child: Text('No data available'));
-          }
-
           // Show detail body
           return DetailBody(
-            meal: provider.mealDetail!,
+            foodName: widget.foodName,
             imagePath: widget.imagePath,
             confidence: widget.confidence,
-            nutritionInfo: provider.nutritionInfo,
-            isLoadingNutrition: provider.isNutritionLoading,
-            nutritionError: provider.nutritionError,
-            onRetryNutrition: () =>
-                provider.retryNutritionInfo(widget.foodName),
           );
         },
       ),

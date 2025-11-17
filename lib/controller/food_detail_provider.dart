@@ -33,10 +33,7 @@ class FoodDetailProvider extends ChangeNotifier {
   // fetch all
   Future<void> fetchFoodDetails(String foodName) async {
     await _fetchMealDetails(foodName);
-
-    if (_mealDetail != null) {
-      await _fetchNutritionInfo(foodName);
-    }
+    await _fetchNutritionInfo(foodName);
   }
 
   Future<void> _fetchMealDetails(String foodName) async {
@@ -52,6 +49,7 @@ class FoodDetailProvider extends ChangeNotifier {
         logger.d('Meal loaded: ${_mealDetail!.name}');
       } else {
         _mealError = 'No recipe found for "$foodName"';
+        logger.e('No recipe found for "$foodName"');
       }
     } catch (e) {
       logger.e('Meal fetch error: $e');
@@ -73,7 +71,7 @@ class FoodDetailProvider extends ChangeNotifier {
       logger.d('Nutrition loaded: ${_nutritionInfo.toString()}');
     } catch (e) {
       logger.e('Nutrition fetch error: $e');
-      _nutritionError = 'Failed to load nutrition info';
+      _nutritionError = 'No internet connection, please try again later.';
     } finally {
       _isNutritionLoading = false;
       notifyListeners();
