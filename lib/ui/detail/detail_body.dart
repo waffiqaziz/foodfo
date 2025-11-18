@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:foodfo/controller/food_detail_provider.dart';
+import 'package:foodfo/controller/detail_provider.dart';
 import 'package:foodfo/ui/detail/ingredients_card.dart';
 import 'package:foodfo/ui/detail/instructions_card.dart';
 import 'package:foodfo/ui/detail/meal_picture_card.dart';
