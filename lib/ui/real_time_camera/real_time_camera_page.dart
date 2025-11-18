@@ -4,7 +4,7 @@ import 'package:foodfo/controller/real_time_classification_provider.dart';
 import 'package:foodfo/ui/real_time_camera/camera_view.dart';
 import 'package:foodfo/ui/real_time_camera/rounded_corner_border.dart';
 import 'package:foodfo/ui/real_time_camera/classification_results_view.dart';
-import 'package:foodfo/ui/real_time_camera/paused_State_view.dart';
+import 'package:foodfo/ui/real_time_camera/paused_state_view.dart';
 import 'package:foodfo/ui/real_time_camera/scanning_state_view.dart';
 import 'package:provider/provider.dart';
 
