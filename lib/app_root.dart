@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:foodfo/controller/food_detail_provider.dart';
+import 'package:foodfo/controller/detail_provider.dart';
 import 'package:foodfo/controller/home_provider.dart';
-import 'package:foodfo/controller/image_classification_provider.dart';
+import 'package:foodfo/controller/real_time_classification_provider.dart';
 import 'package:foodfo/service/asset_model_service.dart';
 import 'package:foodfo/service/firebase_model_service.dart';
 import 'package:foodfo/service/meal_service.dart';
@@ -32,7 +32,7 @@ class AppRoot extends StatelessWidget {
           ),
         ),
         ChangeNotifierProvider(
-          create: (context) => ImageClassificationViewmodel(
+          create: (context) => RealTimeClassificationViewmodel(
             context.read<FirebaseModelService>(),
           ),
         ),

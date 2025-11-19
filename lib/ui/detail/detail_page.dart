@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:foodfo/controller/food_detail_provider.dart';
+import 'package:foodfo/controller/detail_provider.dart';
 import 'package:foodfo/ui/detail/detail_body.dart';
 import 'package:provider/provider.dart';
 
