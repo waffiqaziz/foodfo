@@ -20,24 +20,20 @@ A short, catchy name from **Food** + **Info**. Easy to remember and clearly refl
 
 ## Demo
 
-<div style="display: flex; gap: 10px;">
-  <div>
-    <h4>Image Classification</h4>
-    <img src="https://i.postimg.cc/cHfBShGS/image-classification.gif" alt="image-classification" width="640" style="max-width: 100%; height: auto;">
-  </div>
-  <div>
-    <h4>Detected Not Food</h4>
-    <img src="https://i.postimg.cc/brKt8f3B/image.png" alt="not-image-classification-result" width="640" style="max-width: 100%; height: auto;">
-  </div>  
-  <div>
-    <h4>From Camera Source</h4>
-    <img src="https://i.postimg.cc/Sxjc9Vz2/camera-source.gif" alt="classification-result-from-camera" width="640" style="max-width: 100%; height: auto;">
-  </div>
-  <div>
-    <h4>Real-Time Detection</h4>
-    <img src="https://i.postimg.cc/9QxJ5ryR/real-time-v2.gif" alt="real-time-classification" width="640" style="max-width: 100%; height: auto;">
-  </div>
-</div>
+<table>
+  <tr>
+    <th>Image Classification</th>
+    <th>Detected Not Food</th>
+    <th>From Camera Source</th>
+    <th>Real-Time Detection</th>
+  </tr>
+  <tr>
+    <td><img src="https://media.giphy.com/media/lpegMftBFQkkiROtYR/giphy.gif" height="400"></td>
+    <td><img src="https://i.postimg.cc/brKt8f3B/image.png" alt="not-food" height="400"></td>
+    <td><a href="https://media.giphy.com/media/DKn5oEuONRfoQYcl4n/giphy.gif">From Camera Source</a></td>
+    <td><a href="https://media.giphy.com/media/plDkMAFXzyWpSRuhvf/giphy.gif">Real-Time Detection</a>
+  </tr>
+</table>
 
 ## Resource
 
