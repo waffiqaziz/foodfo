@@ -28,10 +28,10 @@ A short, catchy name from **Food** + **Info**. Easy to remember and clearly refl
     <th>Real-Time Detection</th>
   </tr>
   <tr>
-    <td><img src="https://i.postimg.cc/cHfBShGS/image-classification.gif" alt="image-classification" height="400"></td>
+    <td><img src="https://media.giphy.com/media/lpegMftBFQkkiROtYR/giphy.gif" height="400"></td>
     <td><img src="https://i.postimg.cc/brKt8f3B/image.png" alt="not-food" height="400"></td>
-    <td><img src="https://i.postimg.cc/Sxjc9Vz2/camera-source.gif" alt="camera-source" height="400"></td>
-    <td><img src="https://i.postimg.cc/9QxJ5ryR/real-time-v2.gif" alt="realtime" height="400"></td>
+    <td><img src="https://media.giphy.com/media/DKn5oEuONRfoQYcl4n/giphy.gif" alt="camera-source" height="400"></td>
+    <td><img src="https://media.giphy.com/media/plDkMAFXzyWpSRuhvf/giphy.gif" alt="realtime" height="400"></td>
   </tr>
 </table>
 
