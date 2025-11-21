@@ -13,7 +13,6 @@ A short, catchy name from **Food** + **Info**. Easy to remember and clearly refl
 ## Features
 
 - **Real-time Image Capture** - Take photos directly within the app
-- **AI-Powered Recognition** - Machine learning-based food classification
 - **Instant Predictions** - Get immediate results about food in images
 - **Clean UI** - Intuitive and user-friendly interface
 - **Android Compatible** - Works seamlessly on Android devices
