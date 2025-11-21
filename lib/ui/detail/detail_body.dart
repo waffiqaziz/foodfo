@@ -40,10 +40,21 @@ class _DetailBodyState extends State<DetailBody> {
             SliverAppBar.large(
               expandedHeight: 300,
               pinned: true,
+              leading: Container(
+                margin: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerHighest,
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back_rounded),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ),
               flexibleSpace: LayoutBuilder(
                 builder: (BuildContext context, BoxConstraints constraints) {
                   final bool isCollapsed =
-                      constraints.maxHeight <= kToolbarHeight + 50;
+                      constraints.maxHeight <= kToolbarHeight + 75;
 
                   return FlexibleSpaceBar(
                     titlePadding: isCollapsed
