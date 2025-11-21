@@ -30,8 +30,8 @@ A short, catchy name from **Food** + **Info**. Easy to remember and clearly refl
   <tr>
     <td><img src="https://media.giphy.com/media/lpegMftBFQkkiROtYR/giphy.gif" height="400"></td>
     <td><img src="https://i.postimg.cc/brKt8f3B/image.png" alt="not-food" height="400"></td>
-    <td><img src="https://media.giphy.com/media/DKn5oEuONRfoQYcl4n/giphy.gif" alt="camera-source" height="400"></td>
-    <td><img src="https://media.giphy.com/media/plDkMAFXzyWpSRuhvf/giphy.gif" alt="realtime" height="400"></td>
+    <td><a href="https://media.giphy.com/media/DKn5oEuONRfoQYcl4n/giphy.gif">From Camera Source</a></td>
+    <td><a href="https://media.giphy.com/media/plDkMAFXzyWpSRuhvf/giphy.gif">Real-Time Detection</a>
   </tr>
 </table>
 
