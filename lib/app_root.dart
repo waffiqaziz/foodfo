@@ -22,7 +22,7 @@ class AppRoot extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider(create: (_) => MealService()),
-        Provider(create: (_) => NutritionService()),
+        Provider(create: (_) => NutritionService.getInstance()),
         Provider(create: (_) => AssetModelService()),
         Provider(create: (_) => FirebaseModelService()),
         ChangeNotifierProvider(

@@ -38,7 +38,7 @@ A short, catchy name from **Food** + **Info**. Easy to remember and clearly refl
 
 ## TheMealDB API
 
-We use TheMealDB API to get pictures, ingredients, and recipe. Endpoint: 
+We use TheMealDB API to get pictures, ingredients, and recipe. Endpoint:
 [www.themealdb.com/api/json/v1/1/search.php?s=Arrabiata](www.themealdb.com/api/json/v1/1/search.php?s=Arrabiata)
 
 ### Model
@@ -57,51 +57,104 @@ Firebase Model Hosting allows models to be updated without releasing a new app v
 
 ## Getting Started
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+> [!NOTE]
+> This branch differs from `main` and requires your own Firebase project configuration. It uses the [firebase_ai](https://pub.dev/packages/firebase_ai) package which replaces the deprecated [google_generative_ai](https://pub.dev/packages/google_generative_ai).
+>
+> As [Firebas ML is already deprecated](https://firebase.google.com/support/releases#firebase-ml-deprecated-2026) and new Firebase projects can no longer use Firebase ML. You can still use the app with local model.
+>
+> If you want to use Firebase ML available on `main` branch and use my Firebase project **before June 15, 2027**.
 
 ### Prerequisites
 
-Before you begin, ensure you have the following installed:
+Before you begin, ensure you have the following installed on your machine:
 
 - [Git](https://git-scm.com/)
 - [Flutter SDK](https://docs.flutter.dev/get-started/install)
 - [VS Code](https://code.visualstudio.com/download) or
 [Android Studio](https://developer.android.com/studio)
 - [Gemini API Key](https://aistudio.google.com/) (required for ML generative AI)
+- [Firebase CLI](https://firebase.google.com/docs/cli#setup_update_cli) - Used to setup your Firebase project
+- Firebase Account - You'll need a Firebase project (we'll set this up in the next steps)
 
-### Step by step
+For general Flutter guidance, refer to the [Flutter documentation](https://docs.flutter.dev/).
 
-1. Clone the repository
+---
 
-    ```bash
-    git clone https://github.com/waffiqaziz/foodfo.git
-    cd food_fo
-    ```
+## Installation Steps
 
-2. Install dependencies
+### Step 1: Clone the Repository
 
-    ```bash
-    flutter pub get
-    ```
+```bash
+git clone https://github.com/waffiqaziz/foodfo.git
+cd food_fo
+```
 
-3. Configure API Key
+### Step 2: Remove Existing Firebase Configuration Files
 
-    Create a `.env` file in the project root:
+Delete the following files as they will be replaced with your own Firebase project configuration:
 
-    ```env
-    GEMINI_API_KEY={YOUR_API_KEY}
-    ```
+```bash
+android/app/google-services.json
+firebase.json
+lib/firebase_options.dart
+```
 
-4. Generate API files
+### Step 3: Set Up Your Firebase Project
 
-    ```bash
-    dart run build_runner build -d
-    ```
+#### 3.1 Initialize Firebase for Flutter
 
-5. Run the app
+Follow the official Firebase setup guide to create and connect your Firebase project: [Firebase Flutter Setup Guide](https://firebase.google.com/docs/flutter/setup?platform=android)
 
-   ```bash
-   flutter run
-   ```
+This will generate new configuration files including `google-services.json` and `firebase_options.dart`.
+
+~~#### 3.2 Enable Firebase ML Model Downloader~~
+
+~~Set up the Firebase ML Model Downloader to enable model downloads in your app:~~
+
+~~1. Install the package: [firebase_ml_model_downloader](https://pub.dev/packages/firebase_ml_model_downloader) (Already set up. Optional reading for context.)~~
+~~2. Host your own model guide: [Manage Hosted Models](https://firebase.google.com/docs/ml/manage-hosted-models)~~
+
+#### 3.3 Configure Firebase AI Logic
+
+Enable and configure Firebase AI Logic for your project: [Firebase AI Logic Setup Guide](https://firebase.google.com/docs/ai-logic/get-started?platform=flutter&api=dev#set-up-firebase)
+> [!Note]
+> Just follow "Step 1: Set up a Firebase project and connect your app", the others already set-up
+
+#### 3.4 Enable Firebase App Check
+
+Since November 2, 2026, Firebase App Check enforcement will be required to use Firebase AI Logic [Learn more](https://firebase.google.com/docs/ai-logic/faq-and-troubleshooting?authuser=0#security-app-check).
+
+1. Enable and register your apps to use [App Check](https://console.firebase.google.com/project/_/appcheck)
+2. Configure Debug Tokens for local development: [Android Debug Provider Setup](https://firebase.google.com/docs/app-check/flutter/debug-provider#android)
+
+3. Enforce App Check for Firebase AI Logic in your Firebase Console to ensure AI requests are only accepted from verified app instances.
+
+### Step 4: Install Dependencies and Run the Application
+
+Connect your device or emulator, then run the following command in your project directory:
+
+```bash
+flutter pub get
+flutter run
+```
+
+## Troubleshooting
+
+If you encounter issues during setup:
+
+- Verify your Flutter SDK version: `flutter --version`
+- Ensure all Firebase configuration files are properly generated
+- Check that your Firebase project has the necessary APIs enabled
+- Review Firebase Console for any service-specific configuration requirements
+
+## Additional Resources
+
+- [Flutter Documentation](https://docs.flutter.dev/)
+- [Firebase Documentation](https://firebase.google.com/docs)
+- [firebase_ai Package](https://pub.dev/packages/firebase_ai)
+
+---
+
+## Need Help?
+
+If you run into any issues, please check the project's issue tracker or create a new issue with details about your problem.
