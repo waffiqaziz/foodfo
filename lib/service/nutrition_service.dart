@@ -10,7 +10,7 @@ class NutritionService {
 
   NutritionService()
     : _model = GenerativeModel(
-        model: 'gemini-2.0-flash',
+        model: 'gemini-3.1-flash-lite',
         apiKey: Env.geminiApiKey,
         systemInstruction: Content.system(
           'I am a machine capable of identifying the nutrients or nutritional content of food, '

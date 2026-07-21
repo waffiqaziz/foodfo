@@ -2,7 +2,7 @@
 
 FoodFo is a Flutter-based food image classification app that uses machine learning to recognize various types of food from photos. Designed with a clean UI and optimized performance, FoodFo allows users to capture, real-time analyze, and instantly get predictions about what food appears in an image.
 
-[![Flutter Version](https://img.shields.io/badge/flutter-v3.41.5-blue?logo=flutter&logoColor=white)](https://github.com/flutter/flutter/blob/main/CHANGELOG.md#3415)
+[![Flutter Version](https://img.shields.io/badge/flutter-v3.44.4-blue?logo=flutter&logoColor=white)](https://github.com/flutter/flutter/blob/main/CHANGELOG.md#3444)
 [![build](https://github.com/waffiqaziz/food_fo/actions/workflows/build.yml/badge.svg)](https://github.com/waffiqaziz/food_fo/actions/workflows/build.yml)
 
 ## Why the name FoodFo?
