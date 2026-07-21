@@ -1,49 +1,89 @@
 import 'dart:convert';
 
-import 'package:foodfo/env/env.dart';
+import 'package:firebase_ai/firebase_ai.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:foodfo/model/nutrition_response.dart';
-import 'package:foodfo/utils/helper.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
+
+import '../utils/helper.dart';
 
 class NutritionService {
-  final GenerativeModel _model;
+  static NutritionService? _instance;
+  GenerativeModel? _model;
 
-  NutritionService()
-    : _model = GenerativeModel(
-        model: 'gemini-3.1-flash-lite',
-        apiKey: Env.geminiApiKey,
-        systemInstruction: Content.system(
-          'I am a machine capable of identifying the nutrients or nutritional content of food, '
-          'just like a food laboratory test. The items I can identify are calories, carbohydrates, '
-          'fat, fiber, and protein. The units of these indicators are grams. '
-          'Always respond with valid JSON only, no markdown formatting.',
+  NutritionService._();
+
+  static NutritionService getInstance() {
+    _instance ??= NutritionService._();
+    return _instance!;
+  }
+
+  GenerativeModel _getModel() {
+    if (_model != null) return _model!;
+
+    final ai = FirebaseAI.googleAI(
+      appCheck: FirebaseAppCheck.instance,
+      useLimitedUseAppCheckTokens: true,
+    );
+
+    _model = ai.generativeModel(
+      model: 'gemini-3.1-flash-lite',
+      systemInstruction: Content.system(
+        'Provide nutritional information per 100g serving. Values in grams.',
+      ),
+      generationConfig: GenerationConfig(
+        responseMimeType: 'application/json',
+        responseSchema: Schema(
+          SchemaType.object,
+          properties: {
+            'calories': Schema(
+              SchemaType.number,
+              description: 'Calories per 100g',
+              nullable: false,
+            ),
+            'carbs': Schema(
+              SchemaType.number,
+              description: 'Carbohydrates in grams',
+              nullable: false,
+            ),
+            'protein': Schema(
+              SchemaType.number,
+              description: 'Protein in grams',
+              nullable: false,
+            ),
+            'fat': Schema(
+              SchemaType.number,
+              description: 'Fat in grams',
+              nullable: false,
+            ),
+            'fiber': Schema(
+              SchemaType.number,
+              description: 'Fiber in grams',
+              nullable: false,
+            ),
+          },
         ),
-      );
+      ),
+    );
+
+    return _model!;
+  }
 
   Future<NutritionInfo> fetchNutritionInfo(String foodName) async {
-    final prompt =
-        'Provide nutritional information for $foodName per 100g serving. '
-        'Return JSON with these exact keys: calories, carbs, protein, fat, fiber';
+    final prompt = 'Nutritional information for $foodName';
 
     try {
-      final response = await _model.generateContent([Content.text(prompt)]);
+      final response = await _getModel().generateContent([Content.text(prompt)]);
 
       if (response.text == null) {
         throw Exception('Empty response from Gemini API');
       }
 
-      // Clean and parse the response
-      final jsonText = _cleanJsonResponse(response.text!);
-      final jsonData = json.decode(jsonText);
-
+      final jsonData = json.decode(response.text!);
+      logger.i(jsonData);
       return NutritionInfo.fromJson(jsonData);
     } catch (e) {
       logger.e('Nutrition fetch error: $e');
       throw Exception('Failed to fetch nutrition info: ${e.toString()}');
     }
-  }
-
-  String _cleanJsonResponse(String text) {
-    return text.trim().replaceAll('```json', '').replaceAll('```', '').trim();
   }
 }
