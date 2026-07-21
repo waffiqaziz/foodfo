@@ -4,7 +4,6 @@ import 'package:foodfo/theme/crop_image_theme.dart';
 import 'package:foodfo/ui/home/food_results_card.dart';
 import 'package:foodfo/ui/home/image_preview_card.dart';
 import 'package:foodfo/ui/home/image_source_button.dart';
-import 'package:foodfo/ui/home/info_card.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -109,102 +108,117 @@ class HomeScreen extends StatelessWidget {
 
                   const SizedBox(height: 16),
 
-                  // local analyze
+                  // analyze
                   Consumer<HomeProvider>(
                     builder: (context, provider, child) {
-                      final hasImage = provider.imagePath != null;
+                      switch (provider.modelStatus) {
+                        case ModelDownloadStatus.checking:
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
 
-                      if (provider.hasError && provider.errorMessage != null) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.error_outline,
-                                    color: Colors.white,
+                        case ModelDownloadStatus.notDownloaded:
+                        case ModelDownloadStatus.error:
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              if (provider.modelErrorMessage != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: Text(
+                                    provider.modelErrorMessage!,
+                                    style: TextStyle(
+                                      color: Colors.red.shade700,
+                                    ),
+                                    textAlign: TextAlign.center,
                                   ),
-                                  const SizedBox(width: 8),
-                                  Expanded(child: Text(provider.errorMessage!)),
-                                ],
+                                ),
+                              FilledButton.icon(
+                                onPressed: () => provider.downloadModel(),
+                                icon: const Icon(Icons.download_outlined),
+                                label: const Text('Download Model to Continue'),
                               ),
-                              backgroundColor: Colors.red.shade700,
-                              behavior: SnackBarBehavior.floating,
-                              duration: const Duration(seconds: 4),
-                              action: SnackBarAction(
-                                label: 'Dismiss',
-                                textColor: Colors.white,
-                                onPressed: () {
-                                  ScaffoldMessenger.of(context)
-                                      .hideCurrentSnackBar();
-                                },
+                            ],
+                          );
+
+                        case ModelDownloadStatus.downloading:
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              LinearProgressIndicator(
+                                value: provider.downloadProgress,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Downloading model... ${(provider.downloadProgress * 100).toStringAsFixed(0)}%',
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          );
+
+                        case ModelDownloadStatus.ready:
+                          final hasImage = provider.imagePath != null;
+                          return FilledButton.icon(
+                            onPressed: hasImage && !provider.isAnalyzing
+                                ? () => provider.analyzeImage()
+                                : null,
+                            icon: provider.isAnalyzing
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Icon(Icons.restaurant_menu),
+                            label: Text(
+                              provider.isAnalyzing
+                                  ? 'Analyzing...'
+                                  : 'Identify Food',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           );
-                          provider.clearError();
-                        });
+
+                        case ModelDownloadStatus.updateAvailable:
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Material(
+                                color: Colors.blue.shade50,
+                                borderRadius: BorderRadius.circular(8),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(8),
+                                  onTap: () => provider.downloadModel(),
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(12),
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.system_update_outlined),
+                                        SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(
+                                            'A newer model is available — tap to update',
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              // ...same "ready" button as before, since the current model still works
+                            ],
+                          );
                       }
-
-                      return FilledButton.icon(
-                        onPressed: hasImage && !provider.isAnalyzing
-                            ? () => provider.analyzeImageLocal()
-                            : null,
-                        icon: provider.isAnalyzing
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : const Icon(Icons.restaurant_menu),
-                        label: Text(
-                          provider.isAnalyzing
-                              ? 'Analyzing...'
-                              : 'Identify Food (Local)',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      );
                     },
                   ),
-                  const SizedBox(height: 12),
-
-                  // cloud analyze
-                  Consumer<HomeProvider>(
-                    builder: (context, provider, child) {
-                      final hasImage = provider.imagePath != null;
-
-                      return OutlinedButton.icon(
-                        onPressed: hasImage && !provider.isAnalyzing
-                            ? () => provider.analyzeImageCloud()
-                            : null,
-                        icon: provider.isAnalyzing
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Icon(Icons.cloud_outlined),
-                        label: Text(
-                          provider.isAnalyzing
-                              ? 'Analyzing...'
-                              : 'Identify Food (Cloud)',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 24),
-                  InfoCard(),
                 ],
               ),
             ),

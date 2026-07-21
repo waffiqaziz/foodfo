@@ -1,12 +1,12 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
-import 'package:foodfo/service/firebase_model_service.dart';
+import 'package:foodfo/service/github_model_service.dart';
 
 class RealTimeClassificationViewmodel extends ChangeNotifier {
-  final FirebaseModelService _firebaseModelService;
+  final GithubModelService _githubModelService;
 
-  RealTimeClassificationViewmodel(this._firebaseModelService) {
-    _firebaseModelService.initHelper();
+  RealTimeClassificationViewmodel(this._githubModelService) {
+    _githubModelService.initHelper();
   }
 
   Map<String, num> _classifications = {};
@@ -18,7 +18,7 @@ class RealTimeClassificationViewmodel extends ChangeNotifier {
   );
 
   Future<void> runClassification(CameraImage camera) async {
-    _classifications = await _firebaseModelService.inferenceCameraFrame(camera);
+    _classifications = await _githubModelService.inferenceCameraFrame(camera);
     notifyListeners();
   }
 

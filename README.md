@@ -13,9 +13,8 @@ A short, catchy name from **Food** + **Info**. Easy to remember and clearly refl
 
 - **Real-time Image Capture** — Take photos directly within the app.
 - **Instant Predictions** — Get immediate food classification results.
-- **Local & Cloud Models** — Choose between on-device and Firebase ML models.
+- **Cloud Models** — GitHub-hosted models.
 - **Detailed Food Information** — Get nutrition and food details using generative AI and MealDB.
-
 
 ## Demo
 
@@ -43,26 +42,13 @@ We use TheMealDB API to get pictures, ingredients, and recipe. Endpoint:
 
 ### Model
 
-This app uses the **Google AIY Vision Classifier Food V1** TFLite model for food recognition.
+This app uses the **Google AIY Vision Classifier Food V1** TFLite model for food recognition. Hosted on [GitHub](https://github.com/waffiqaziz/foodfo-models).
 
 - **Model Source**: [Kaggle - Google AIY Vision Classifier Food V1](https://www.kaggle.com/models/google/aiy/tfLite/vision-classifier-food-v1)
 - **Format**: TensorFlow Lite (.tflite)
 - **Purpose**: Multi-class food image classification
 
-### About Firebase Model Hosting
-
-Firebase Model Hosting allows models to be updated without releasing a new app version. However, it is [deprecated and will shut down on **June 15, 2027**](https://firebase.google.com/support/releases#firebase-ml-deprecated-2026). New Firebase projects can no longer use Firebase ML.
-
-*This project (`main` branch) will use Firebase Model Hosting until the shutdown date.*
-
 ## Getting Started
-
-> [!NOTE]
-> This branch differs from `main` and requires your own Firebase project configuration. It uses the [firebase_ai](https://pub.dev/packages/firebase_ai) package which replaces the deprecated [google_generative_ai](https://pub.dev/packages/google_generative_ai).
->
-> As [Firebas ML is already deprecated](https://firebase.google.com/support/releases#firebase-ml-deprecated-2026) and new Firebase projects can no longer use Firebase ML. You can still use the app with local model.
->
-> If you want to use Firebase ML available on `main` branch and use my Firebase project **before June 15, 2027**.
 
 ### Prerequisites
 
@@ -107,14 +93,7 @@ Follow the official Firebase setup guide to create and connect your Firebase pro
 
 This will generate new configuration files including `google-services.json` and `firebase_options.dart`.
 
-~~#### 3.2 Enable Firebase ML Model Downloader~~
-
-~~Set up the Firebase ML Model Downloader to enable model downloads in your app:~~
-
-~~1. Install the package: [firebase_ml_model_downloader](https://pub.dev/packages/firebase_ml_model_downloader) (Already set up. Optional reading for context.)~~
-~~2. Host your own model guide: [Manage Hosted Models](https://firebase.google.com/docs/ml/manage-hosted-models)~~
-
-#### 3.3 Configure Firebase AI Logic
+#### 3.2 Configure Firebase AI Logic
 
 Enable and configure Firebase AI Logic for your project: [Firebase AI Logic Setup Guide](https://firebase.google.com/docs/ai-logic/get-started?platform=flutter&api=dev#set-up-firebase)
 > [!Note]
@@ -126,8 +105,7 @@ Since November 2, 2026, Firebase App Check enforcement will be required to use F
 
 1. Enable and register your apps to use [App Check](https://console.firebase.google.com/project/_/appcheck)
 2. Configure Debug Tokens for local development: [Android Debug Provider Setup](https://firebase.google.com/docs/app-check/flutter/debug-provider#android)
-
-3. Enforce App Check for Firebase AI Logic in your Firebase Console to ensure AI requests are only accepted from verified app instances.
+3. Enforce App Check for Firebase AI Logic in your Firebase Console to ensure AI requests are only accepted from verified app instances.  
 
 ### Step 4: Install Dependencies and Run the Application
 

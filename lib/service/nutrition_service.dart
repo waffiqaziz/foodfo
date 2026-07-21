@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:firebase_ai/firebase_ai.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:foodfo/model/nutrition_response.dart';
 
 import '../utils/helper.dart';
@@ -103,11 +104,11 @@ class NutritionService {
   /// Experimental: uses a Firebase AI Logic server-side prompt template.
   ///
   /// Template ID: "nutrition-template-v1-0-0"
-  /// 
+  ///
   /// Docs: https://firebase.google.com/docs/ai-logic/server-prompt-templates/get-started
   ///
   /// You can use this template, copy and paste on your Prompt templates:
-  /// 
+  ///
   /// *Configuration (frontmatter):*
   /// ```yaml
   /// model: "gemini-3.1-flash-lite"

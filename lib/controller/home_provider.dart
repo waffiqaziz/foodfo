@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:foodfo/service/asset_model_service.dart';
-import 'package:foodfo/service/firebase_model_service.dart';
+import 'package:foodfo/model/model_release.dart';
+import 'package:foodfo/service/github_model_service.dart';
+import 'package:foodfo/service/i_model_download_service.dart';
 import 'package:foodfo/theme/crop_image_theme.dart';
 import 'package:foodfo/ui/custom_camera/custom_camera_page.dart';
 import 'package:foodfo/ui/real_time_camera/real_time_camera_page.dart';
@@ -8,13 +9,24 @@ import 'package:foodfo/utils/helper.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
-class HomeProvider extends ChangeNotifier {
-  final AssetModelService _assetModelService;
-  final FirebaseModelService _firebaseModelService;
+enum ModelDownloadStatus {
+  checking,
+  notDownloaded,
+  downloading,
+  ready,
+  updateAvailable,
+  error,
+}
 
-  HomeProvider(this._assetModelService, this._firebaseModelService) {
-    _initializeServices();
+class HomeProvider extends ChangeNotifier {
+  final GithubModelService _githubModelService;
+  final IModelDownloadService _downloadService;
+
+  HomeProvider(this._githubModelService, this._downloadService) {
+    _checkModelStatus();
   }
+
+  ModelRelease? _pendingRelease;
 
   String? imagePath;
   XFile? imageFile;
@@ -24,14 +36,74 @@ class HomeProvider extends ChangeNotifier {
   String? errorMessage;
   bool hasError = false;
 
-  Future<void> _initializeServices() async {
-    try {
-      // Initialize both services
-      await _assetModelService.initHelper();
-      await _firebaseModelService.initHelper();
-    } catch (e) {
-      logger.e('Failed to initialize services: $e');
+  ModelDownloadStatus modelStatus = ModelDownloadStatus.checking;
+  double downloadProgress = 0.0;
+  String? modelErrorMessage;
+
+  bool get isModelReady => modelStatus == ModelDownloadStatus.ready;
+
+  Future<void> _checkModelStatus() async {
+    final downloaded = await _downloadService.isModelDownloaded();
+    if (!downloaded) {
+      modelStatus = ModelDownloadStatus.notDownloaded;
+      notifyListeners();
+      return;
     }
+
+    await _initModelService(); // get inference working immediately, don't block on network
+
+    // After the model is usable, quietly check for updates in the background.
+    _checkForUpdateInBackground();
+  }
+
+  Future<void> _checkForUpdateInBackground() async {
+    final hasUpdate = await _downloadService.hasUpdateAvailable();
+    if (hasUpdate && modelStatus == ModelDownloadStatus.ready) {
+      modelStatus = ModelDownloadStatus.updateAvailable;
+      notifyListeners();
+    }
+  }
+
+  Future<void> downloadModel() async {
+    modelStatus = ModelDownloadStatus.downloading;
+    downloadProgress = 0.0;
+    modelErrorMessage = null;
+    notifyListeners();
+
+    try {
+      final release =
+          _pendingRelease ?? await _downloadService.fetchLatestRelease();
+      await for (final progress in _downloadService.downloadModel(release)) {
+        downloadProgress = progress;
+        notifyListeners();
+      }
+      _pendingRelease = null;
+      await _initModelService();
+    } catch (e) {
+      logger.e('Model download failed: $e');
+      modelStatus = ModelDownloadStatus.error;
+      modelErrorMessage =
+          'Failed to download model. Please check your connection and try again.';
+      notifyListeners();
+    }
+  }
+
+  Future<void> _initModelService() async {
+    try {
+      await _githubModelService.initHelper();
+      modelStatus = ModelDownloadStatus.ready;
+      notifyListeners();
+    } catch (e) {
+      logger.e('Failed to initialize model service: $e');
+      modelStatus = ModelDownloadStatus.error;
+      modelErrorMessage = 'Failed to load model. Please try again.';
+      notifyListeners();
+    }
+  }
+
+  void retryModelSetup() {
+    modelErrorMessage = null;
+    // If the file's on disk but init failed, recheck
   }
 
   void _setImage(XFile? value) {
@@ -121,9 +193,10 @@ class HomeProvider extends ChangeNotifier {
     );
   }
 
-  // analyze with local asset model
-  Future<void> analyzeImageLocal() async {
+  // --- single identify-food entrypoint (replaces analyzeImageLocal/Cloud) ---
+  Future<void> analyzeImage() async {
     if (imagePath == null || imageFile == null) return;
+    if (!isModelReady) return;
 
     isAnalyzing = true;
     _resetAnalysisState();
@@ -131,37 +204,13 @@ class HomeProvider extends ChangeNotifier {
 
     try {
       final bytes = await imageFile!.readAsBytes();
-      classifications = await _assetModelService.inferenceStaticImage(bytes);
+      classifications = await _githubModelService.inferenceStaticImage(bytes);
       hasError = false;
-      logger.d("Local classification successful: $classifications");
+      logger.d("Classification successful: $classifications");
     } catch (e) {
-      logger.e('Local classification failed: $e');
+      logger.e('Classification failed: $e');
       hasError = true;
-      errorMessage = 'Local analysis failed: please try again';
-      classifications = {};
-    } finally {
-      isAnalyzing = false;
-      notifyListeners();
-    }
-  }
-
-  // // analyze with cloud firebase asset model
-  Future<void> analyzeImageCloud() async {
-    if (imagePath == null || imageFile == null) return;
-
-    isAnalyzing = true;
-    _resetAnalysisState();
-    notifyListeners();
-
-    try {
-      final bytes = await imageFile!.readAsBytes();
-      classifications = await _firebaseModelService.inferenceStaticImage(bytes);
-      hasError = false;
-      logger.d("Cloud classification successful: $classifications");
-    } catch (e) {
-      logger.e('Cloud classification failed: $e');
-      hasError = true;
-      errorMessage = 'Cloud analysis failed: please check connection';
+      errorMessage = 'Analysis failed: please try again';
       classifications = {};
     } finally {
       isAnalyzing = false;
@@ -184,8 +233,7 @@ class HomeProvider extends ChangeNotifier {
 
   @override
   void dispose() {
-    _assetModelService.close();
-    _firebaseModelService.close();
+    _githubModelService.close();
     super.dispose();
   }
 }

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:foodfo/controller/detail_provider.dart';
 import 'package:foodfo/controller/home_provider.dart';
 import 'package:foodfo/controller/real_time_classification_provider.dart';
-import 'package:foodfo/service/asset_model_service.dart';
-import 'package:foodfo/service/firebase_model_service.dart';
+import 'package:foodfo/service/github_model_download_service.dart';
+import 'package:foodfo/service/github_model_service.dart';
 import 'package:foodfo/service/meal_service.dart';
 import 'package:foodfo/service/nutrition_service.dart';
 import 'package:foodfo/theme/theme.dart';
@@ -23,17 +23,16 @@ class AppRoot extends StatelessWidget {
       providers: [
         Provider(create: (_) => MealService()),
         Provider(create: (_) => NutritionService.getInstance()),
-        Provider(create: (_) => AssetModelService()),
-        Provider(create: (_) => FirebaseModelService()),
+        Provider(create: (_) => GithubModelDownloadService()),
         ChangeNotifierProvider(
           create: (context) => HomeProvider(
-            context.read<AssetModelService>(),
-            context.read<FirebaseModelService>(),
+            GithubModelService(context.read<GithubModelDownloadService>()),
+            context.read<GithubModelDownloadService>(),
           ),
         ),
         ChangeNotifierProvider(
           create: (context) => RealTimeClassificationViewmodel(
-            context.read<FirebaseModelService>(),
+            context.read<GithubModelService>(),
           ),
         ),
         ChangeNotifierProvider(
