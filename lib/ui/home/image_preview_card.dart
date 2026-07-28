@@ -13,39 +13,47 @@ class ImagePreviewCard extends StatelessWidget {
 
     return Card(
       clipBehavior: Clip.antiAlias,
-      child: Container(
-        height: 300,
-        decoration: BoxDecoration(
-          color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-        ),
-        child: imagePath == null
-            ? Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.restaurant,
-                    size: 80,
-                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No image selected',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Choose an image to identify food',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+      child: AspectRatio(
+        aspectRatio: 1,
+        child: Container(
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+          ),
+          child: imagePath == null
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.restaurant,
+                      size: 80,
                       color: colorScheme.onSurfaceVariant.withValues(
-                        alpha: 0.7,
+                        alpha: 0.4,
                       ),
                     ),
-                  ),
-                ],
-              )
-            : Image.file(File(imagePath!), fit: BoxFit.cover),
+                    const SizedBox(height: 16),
+                    Text(
+                      'No image selected',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Choose an image to identify food',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.7,
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              : Image.file(
+                  File(imagePath!),
+                  width: double.infinity,
+                  fit: BoxFit.contain,
+                ),
+        ),
       ),
     );
   }

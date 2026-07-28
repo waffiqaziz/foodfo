@@ -50,7 +50,7 @@ class RealtimeCameraBodySPage extends State<RealtimeCameraPage> {
         backgroundColor: Colors.black.withValues(alpha: 0.7),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             _isStreamingEnabled = false;
             Navigator.of(context).pop();
@@ -59,7 +59,7 @@ class RealtimeCameraBodySPage extends State<RealtimeCameraPage> {
             backgroundColor: Colors.black.withValues(alpha: 0.5),
           ),
         ),
-        title: const Text('Real-time Food Detection'),
+        title: const Text('Real-time', style: TextStyle(color: Colors.white)),
         actions: [
           IconButton(
             icon: Icon(_isStreamingEnabled ? Icons.pause : Icons.play_arrow),
@@ -88,8 +88,8 @@ class RealtimeCameraBodySPage extends State<RealtimeCameraPage> {
               padding: const EdgeInsets.only(
                 left: 20,
                 right: 20,
-                top: 150,
-                bottom: 260.0,
+                top: 140,
+                bottom: 280.0,
               ),
               child: SizedBox(
                 width: double.infinity,
@@ -119,16 +119,16 @@ class RealtimeCameraBodySPage extends State<RealtimeCameraPage> {
           // Scanning banner
           if (_isStreamingEnabled)
             Positioned(
-              top: 85,
+              top: 95,
               left: 20,
               right: 20,
               child: Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
-                  vertical: 12,
+                  vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.7),
+                  color: Colors.black.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: Colors.white.withValues(alpha: 0.2),
