@@ -37,7 +37,7 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   // Image Preview Card
                   Consumer<HomeProvider>(
-                    builder: (context, provider, child) {
+                    builder: (_, provider, _) {
                       return ImagePreviewCard(imagePath: provider.imagePath);
                     },
                   ),

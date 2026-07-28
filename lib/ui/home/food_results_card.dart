@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:foodfo/ui/detail/detail_page.dart';
 import 'package:foodfo/utils/constant.dart';
+import 'package:foodfo/utils/helper.dart' show getConfidenceColor;
 
 class FoodResultsCard extends StatelessWidget {
   final Map<String, num> classifications;
@@ -17,12 +18,13 @@ class FoodResultsCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final entries = classifications.entries.toList();
     final isNotFood = entries.isEmpty || entries[0].value < confidenceThreshold;
+    final confidence = (entries.isEmpty ? 0.0 : entries[0].value).toDouble();
 
     return Card(
-      color: colorScheme.primaryContainer,
+      color: getConfidenceColor(confidence, colorScheme),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: imagePath != null && entries.isNotEmpty && isNotFood
+        onTap: imagePath != null && entries.isNotEmpty && !isNotFood
             ? () {
                 Navigator.push(
                   context,
@@ -91,7 +93,7 @@ class FoodResultsCard extends StatelessWidget {
               else ...[
                 InkWell(
                   borderRadius: BorderRadius.circular(16),
-                  onTap: imagePath != null
+                  onTap: imagePath != null && !isNotFood
                       ? () {
                           Navigator.push(
                             context,

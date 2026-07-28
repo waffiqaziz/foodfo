@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+import 'package:foodfo/utils/constant.dart';
 import 'package:logger/logger.dart';
 
 var logger = Logger(
@@ -11,3 +13,13 @@ var logger = Logger(
     dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart,
   ),
 );
+
+Color getConfidenceColor(double confidence, ColorScheme colorScheme) {
+  return switch (confidence) {
+    < confidenceThreshold => colorScheme.primaryContainer,
+    < 0.5 => Colors.yellow.shade200,
+    < 0.7 => Colors.lightGreen.shade100,
+    < 0.9 => Colors.lightGreen.shade200,
+    _ => Colors.lightGreen.shade300,
+  };
+}

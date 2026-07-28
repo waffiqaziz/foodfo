@@ -8,6 +8,7 @@ import 'package:foodfo/ui/detail/meal_picture_card.dart';
 import 'package:foodfo/ui/detail/no_meal_data_card.dart';
 import 'package:foodfo/ui/detail/nutrition_card.dart';
 import 'package:foodfo/ui/detail/section_header.dart';
+import 'package:foodfo/utils/helper.dart';
 import 'package:provider/provider.dart';
 
 class DetailBody extends StatefulWidget {
@@ -89,7 +90,11 @@ class _DetailBodyState extends State<DetailBody> {
                     background: Stack(
                       fit: StackFit.expand,
                       children: [
-                        Image.file(File(widget.imagePath), fit: BoxFit.cover),
+                        Image.file(
+                          File(widget.imagePath),
+                          width: double.infinity,
+                          fit: BoxFit.contain,
+                        ),
                         Container(
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
@@ -123,7 +128,10 @@ class _DetailBodyState extends State<DetailBody> {
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: colorScheme.primaryContainer,
+                          color: getConfidenceColor(
+                            widget.confidence,
+                            colorScheme,
+                          ),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(
