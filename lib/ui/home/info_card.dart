@@ -22,9 +22,8 @@ class InfoCard extends StatelessWidget {
             Expanded(
               child: Text(
                 'Take or select a photo of food to identify it using Machine Learning',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSecondaryContainer,
-                ),
+                style: Theme.of(context).textTheme.bodySmall
+                    ?.copyWith(color: colorScheme.onSecondaryContainer),
               ),
             ),
           ],

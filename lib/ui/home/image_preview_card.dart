@@ -33,9 +33,8 @@ class ImagePreviewCard extends StatelessWidget {
                     const SizedBox(height: 16),
                     Text(
                       'No image selected',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
+                      style: Theme.of(context).textTheme.titleMedium
+                          ?.copyWith(color: colorScheme.onSurfaceVariant),
                     ),
                     const SizedBox(height: 8),
                     Text(

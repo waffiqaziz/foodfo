@@ -14,9 +14,8 @@ class SectionHeader extends StatelessWidget {
         const SizedBox(width: 12),
         Text(
           title,
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.titleLarge
+              ?.copyWith(fontWeight: FontWeight.bold),
         ),
       ],
     );

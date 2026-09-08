@@ -26,9 +26,8 @@ class ErrorView extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 message,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(color: colorScheme.error),
+                style: Theme.of(context).textTheme.titleMedium
+                    ?.copyWith(color: colorScheme.error),
               ),
               const SizedBox(height: 8),
               Text(

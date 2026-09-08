@@ -60,9 +60,8 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(height: 24),
                   Text(
                     'Select Image Source',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 12),
 
@@ -136,9 +135,8 @@ class HomeScreen extends StatelessWidget {
                                 label: 'Dismiss',
                                 textColor: Colors.white,
                                 onPressed: () {
-                                  ScaffoldMessenger.of(
-                                    context,
-                                  ).hideCurrentSnackBar();
+                                  ScaffoldMessenger.of(context)
+                                      .hideCurrentSnackBar();
                                 },
                               ),
                             ),
