@@ -55,9 +55,8 @@ class ClassificationResults extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   'The image doesn\'t appear to contain recognizable food',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onPrimaryContainer,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium
+                      ?.copyWith(color: colorScheme.onPrimaryContainer),
                   textAlign: TextAlign.center,
                 ),
               ],
