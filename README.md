@@ -1,6 +1,6 @@
 # FoodFo
 
-FoodFo is a Flutter-based food image classification app that uses machine learning to recognize various types of food from photos. Designed with a clean UI and optimized performance, FoodFo allows users to capture, real-time analyze, and instantly get predictions about what food appears in an image.
+FoodFo is a Flutter-based Android app that uses machine learning to classify food images. Users can capture or upload photos, analyze them in real time, and instantly get food predictions.
 
 [![Flutter Version](https://img.shields.io/badge/flutter-v3.47.2-blue?logo=flutter&logoColor=white)](https://github.com/flutter/flutter/blob/main/CHANGELOG.md#3472)
 [![build](https://github.com/waffiqaziz/food_fo/actions/workflows/build.yml/badge.svg)](https://github.com/waffiqaziz/food_fo/actions/workflows/build.yml)
@@ -11,10 +11,11 @@ A short, catchy name from **Food** + **Info**. Easy to remember and clearly refl
 
 ## Features
 
-- **Real-time Image Capture** - Take photos directly within the app
-- **Instant Predictions** - Get immediate results about food in images
-- **Clean UI** - Intuitive and user-friendly interface
-- **Android Compatible** - Works seamlessly on Android devices
+- **Real-time Image Capture** — Take photos directly within the app.
+- **Instant Predictions** — Get immediate food classification results.
+- **Local & Cloud Models** — Choose between on-device and Firebase ML models.
+- **Detailed Food Information** — Get nutrition and food details using generative AI and MealDB.
+
 
 ## Demo
 
@@ -48,14 +49,11 @@ This app uses the **Google AIY Vision Classifier Food V1** TFLite model for food
 - **Format**: TensorFlow Lite (.tflite)
 - **Purpose**: Multi-class food image classification
 
-### Alternative: Firebase Model Hosting
+### About Firebase Model Hosting
 
-If you want to host your model on Firebase for dynamic updates and version management:
+Firebase Model Hosting allows models to be updated without releasing a new app version. However, it is [deprecated and will shut down on **June 15, 2027**](https://firebase.google.com/support/releases#firebase-ml-deprecated-2026). New Firebase projects can no longer use Firebase ML.
 
-- **Setup Guide**: [Manage hosted models with Firebase](https://firebase.google.com/docs/ml/manage-hosted-models)
-- **Flutter Package**: [firebase_ml_model_downloader](https://pub.dev/packages/firebase_ml_model_downloader)
-
-Firebase hosting allows you to update models without releasing new app versions.
+*This project (`main` branch) will use Firebase Model Hosting until the shutdown date.*
 
 ## Getting Started
 
@@ -67,9 +65,9 @@ samples, guidance on mobile development, and a full API reference.
 
 Before you begin, ensure you have the following installed:
 
-- [Git](https://git-scm.com/) (latest stable version)
-- [Flutter SDK](https://docs.flutter.dev/get-started/install) (at least **v3.38.5**)
-- [VS Code](https://code.visualstudio.com/download) or 
+- [Git](https://git-scm.com/)
+- [Flutter SDK](https://docs.flutter.dev/get-started/install)
+- [VS Code](https://code.visualstudio.com/download) or
 [Android Studio](https://developer.android.com/studio)
 - [Gemini API Key](https://aistudio.google.com/) (required for ML generative AI)
 
