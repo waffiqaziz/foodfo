@@ -17,7 +17,7 @@ dependencies:
 
   image_picker: ^1.2.3
   camera: ^0.12.1
-  image_cropper: ^12.2.1
+  image_cropper: ^13.0.0
 
   http: ^1.6.0
 
